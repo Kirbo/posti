@@ -1,0 +1,49 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }],
+    "stage-0"
+  ],
+  "env": {
+    "build": {
+      "ignore": [
+        "**/*.test.js"
+      ],
+      "presets": [
+        ["env", {
+          "targets": {
+            "node": "0.10.0"
+          },
+          "loose": true,
+          "useBuiltIns": true,
+          "debug": true
+        }],
+        "stage-0",
+        ["minify", {
+          "mangle": false
+        }]
+      ],
+      "plugins": [
+        "shebang",
+        "remove-comments",
+        "minify-constant-folding",
+        "minify-flip-comparisons",
+        "minify-guarded-expressions",
+        "minify-infinity",
+        "minify-replace",
+        "minify-simplify",
+        "minify-type-constructors",
+        "transform-decorators-legacy",
+        "transform-member-expression-literals",
+        "transform-merge-sibling-variables",
+        "transform-minify-booleans",
+        "transform-property-literals",
+        "transform-simplify-comparison-operators",
+        "transform-undefined-to-void"
+      ]
+    }
+  }
+}

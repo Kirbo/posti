@@ -1,0 +1,92 @@
+###### STAGES #################################################################
+stages:
+  - install
+  - test
+  - build
+  - publish
+  - deploy
+
+###### TEMPLATES ##############################################################
+.general: &general
+  tags:
+    - devaus
+  variables:
+    GIT_STRATEGY: fetch
+
+###### JOBS ###################################################################
+install:
+  <<: *general
+  stage: install
+  artifacts:
+    paths:
+      - node_modules
+    expire_in: 1 day
+  script:
+    - yarn
+
+lint:
+  <<: *general
+  stage: test
+  dependencies:
+    - install
+  script:
+    - yarn lint
+
+test:
+  <<: *general
+  stage: test
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - coverage
+    expire_in: 1 month
+  script:
+    - yarn test --ci --coverage
+
+build:
+  <<: *general
+  stage: build
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1 day
+  script:
+    - yarn build
+
+# Run the jobs below only for `release` branch.
+publish to npm:
+  <<: *general
+  stage: publish
+  only:
+    - release
+  dependencies:
+    - build
+  allow_failure: false
+  script:
+    - yarn publish --new-version $(node -p -e "require('./package.json').version")
+
+deploy to github:
+  <<: *general
+  stage: deploy
+  only:
+    - release
+  dependencies:
+    - build
+  script:
+    - if ! [[ $(git remote | grep github | wc -l) > "0" ]]; then git remote add github git@github.com:kirbo/posti.git; fi
+    - export PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+    - git tag -a v${PACKAGE_VERSION} -m "Version ${PACKAGE_VERSION}"
+    - git push github v${PACKAGE_VERSION}
+
+update pages:
+  <<: *general
+  stage: deploy
+  only:
+    - release
+  dependencies:
+    - test
+  script:
+    - ${update_pages_command}
