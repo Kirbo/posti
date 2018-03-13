@@ -14,15 +14,15 @@ stages:
     GIT_STRATEGY: fetch
 
 ###### JOBS ###################################################################
-# install:
-#   <<: *general
-#   stage: install
-#   artifacts:
-#     paths:
-#       - node_modules
-#     expire_in: 1 day
-#   script:
-#     - yarn
+install:
+  <<: *general
+  stage: install
+  artifacts:
+    paths:
+      - node_modules
+    expire_in: 1 day
+  script:
+    - yarn
 
 # lint:
 #   <<: *general
