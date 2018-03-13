@@ -44,17 +44,17 @@ install:
 #   script:
 #     - yarn test --ci --coverage
 
-# build:
-#   <<: *general
-#   stage: build
-#   dependencies:
-#     - install
-#   artifacts:
-#     paths:
-#       - dist
-#     expire_in: 1 day
-#   script:
-#     - yarn build
+build:
+  <<: *general
+  stage: build
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1 day
+  script:
+    - yarn build
 
 # Run the jobs below only for `release` branch.
 # publish to npm:
