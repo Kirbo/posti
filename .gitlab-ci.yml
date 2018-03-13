@@ -24,25 +24,25 @@ install:
   script:
     - yarn
 
-lint:
-  <<: *general
-  stage: test
-  dependencies:
-    - install
-  script:
-    - yarn lint
+# lint:
+#   <<: *general
+#   stage: test
+#   dependencies:
+#     - install
+#   script:
+#     - yarn lint
 
-test:
-  <<: *general
-  stage: test
-  dependencies:
-    - install
-  artifacts:
-    paths:
-      - coverage
-    expire_in: 1 month
-  script:
-    - yarn test --ci --coverage
+# test:
+#   <<: *general
+#   stage: test
+#   dependencies:
+#     - install
+#   artifacts:
+#     paths:
+#       - coverage
+#     expire_in: 1 month
+#   script:
+#     - yarn test --ci --coverage
 
 build:
   <<: *general
@@ -68,6 +68,16 @@ build:
 #   script:
 #     - yarn publish --new-version $(node -p -e "require('./package.json').version")
 
+# update pages:
+#   <<: *general
+#   stage: deploy
+#   only:
+#     - release
+#   dependencies:
+#     - test
+#   script:
+#     - ${update_pages_command}
+
 deploy to github:
   <<: *general
   stage: deploy
@@ -78,17 +88,6 @@ deploy to github:
   script:
     - if ! [[ $(git remote | grep github | wc -l) > "0" ]]; then git remote add github git@github.com:kirbo/posti.git; fi
     - export PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-    - git push github HEAD:refs/head/master
-    - git push github HEAD:master
+    - git push github HEAD:refs/heads/master
     - git tag -a v${PACKAGE_VERSION} -m "Version ${PACKAGE_VERSION}"
     - git push github v${PACKAGE_VERSION}
-
-update pages:
-  <<: *general
-  stage: deploy
-  only:
-    - release
-  dependencies:
-    - test
-  script:
-    - ${update_pages_command}
