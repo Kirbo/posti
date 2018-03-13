@@ -194,6 +194,17 @@ class Posti {
   )
 
   /**
+   * Set file.
+   *
+   * @param {Object} file - File to process
+   *
+   * @returns {void}
+   */
+  setFile = (file) => {
+    this.file = file;
+  }
+
+  /**
    * Start processing file.
    *
    * @param {Object} file - File object.
@@ -201,7 +212,9 @@ class Posti {
    * @returns {Promise} Promise
    */
   processFile = async (file) => {
-    this.file = file;
+    this.setFile(file);
+
+    // This file hasn't been processed yet.
     if (!this.latest.includes(file.filename)) {
       logBlock(`Processing file: ${file.filename}`);
       await this.downloadFile();
@@ -213,9 +226,13 @@ class Posti {
     // This file has already been processed.
     logBlock(`Skipping file: ${file.filename}`);
     const tableConfigs = global.database.getTableConfigs(file.model);
+
+    // If table has `delete_processing` set to true.
     if (tableConfigs.delete_processing) {
+      // If temp table exists.
       return global.database.getDb().getQueryInterface().describeTable(tableConfigs.processing)
         .then(() => {
+          // Drop it like its hot.
           logStep(`Drop temp table '${tableConfigs.processing}'`);
           return global.database.getDb().getQueryInterface().dropTable(tableConfigs.processing);
         })

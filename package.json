@@ -1,6 +1,6 @@
 {
   "name": "posti",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Posti Basic Address auto-updater",
   "repository": "https://github.com/kirbo/posti",
   "author": "Kimmo Saari <kirbo@kirbo-designs.com>",
@@ -10,7 +10,7 @@
     "start": "babel-node src/index.js",
     "force": "cross-env force=true babel-node src/index.js",
     "lint": "eslint .",
-    "test": "cross-env NODE_ENV=test jest src --silent --forceExit",
+    "test": "cross-env NODE_ENV=test jest src --silent --verbose --forceExit",
     "prepush": "yarn lint && yarn test"
   },
   "engines": {

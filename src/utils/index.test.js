@@ -1,5 +1,6 @@
 import _colors from 'colors';
 import path from 'path';
+import os from 'os';
 import 'jest-plugin-console-matchers/setup';
 
 import {
@@ -30,8 +31,15 @@ describe('utils', () => {
     expect(sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 2)).toHaveLength(5);
   });
   test('findDatabaseConfig() should find config', () => {
-    expect(findDatabaseConfig()).toBe(path.resolve(process.env.PWD, 'posti.config.test.js'));
-    const config = path.resolve(process.env.PWD, 'posti.config.test.js');
+    const configFile = findDatabaseConfig();
+    const shouldFindOne = [
+      path.resolve(process.env.PWD, `posti.config.${process.env.PWD}.js`),
+      path.resolve(process.env.PWD, 'posti.config.js'),
+      path.resolve(os.homedir(), '.posti/config.js'),
+    ];
+    expect(shouldFindOne).toContain(configFile);
+
+    const config = path.resolve(process.env.PWD, 'posti.config.example.js');
     process.env.config = config;
     expect(findDatabaseConfig()).toBe(config);
   });
