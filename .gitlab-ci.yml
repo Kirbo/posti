@@ -24,25 +24,25 @@ install:
   script:
     - yarn
 
-# lint:
-#   <<: *general
-#   stage: test
-#   dependencies:
-#     - install
-#   script:
-#     - yarn lint
+lint:
+  <<: *general
+  stage: test
+  dependencies:
+    - install
+  script:
+    - yarn lint
 
-# test:
-#   <<: *general
-#   stage: test
-#   dependencies:
-#     - install
-#   artifacts:
-#     paths:
-#       - coverage
-#     expire_in: 1 month
-#   script:
-#     - yarn test --ci --coverage
+test:
+  <<: *general
+  stage: test
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - coverage
+    expire_in: 1 month
+  script:
+    - yarn test --ci --coverage
 
 build:
   <<: *general
@@ -57,26 +57,26 @@ build:
     - yarn build
 
 # Run the jobs below only for `release` branch.
-# publish to npm:
-#   <<: *general
-#   stage: publish
-#   only:
-#     - release
-#   dependencies:
-#     - build
-#   allow_failure: false
-#   script:
-#     - yarn publish --new-version $(node -p -e "require('./package.json').version")
+publish to npm:
+  <<: *general
+  stage: publish
+  only:
+    - release
+  dependencies:
+    - build
+  allow_failure: false
+  script:
+    - yarn publish --new-version $(node -p -e "require('./package.json').version")
 
-# update pages:
-#   <<: *general
-#   stage: deploy
-#   only:
-#     - release
-#   dependencies:
-#     - test
-#   script:
-#     - ${update_pages_command}
+update pages:
+  <<: *general
+  stage: deploy
+  only:
+    - release
+  dependencies:
+    - test
+  script:
+    - ${update_pages_command}
 
 deploy to github:
   <<: *general
