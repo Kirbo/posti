@@ -57,16 +57,16 @@ build:
     - yarn build
 
 # Run the jobs below only for `release` branch.
-publish to npm:
-  <<: *general
-  stage: publish
-  only:
-    - release
-  dependencies:
-    - build
-  allow_failure: false
-  script:
-    - yarn publish --new-version $(node -p -e "require('./package.json').version")
+# publish to npm:
+#   <<: *general
+#   stage: publish
+#   only:
+#     - release
+#   dependencies:
+#     - build
+#   allow_failure: false
+#   script:
+#     - yarn publish --new-version $(node -p -e "require('./package.json').version")
 
 deploy to github:
   <<: *general
@@ -79,6 +79,7 @@ deploy to github:
     - if ! [[ $(git remote | grep github | wc -l) > "0" ]]; then git remote add github git@github.com:kirbo/posti.git; fi
     - export PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
     - git push github HEAD:refs/head/master
+    - git push github HEAD:master
     - git tag -a v${PACKAGE_VERSION} -m "Version ${PACKAGE_VERSION}"
     - git push github v${PACKAGE_VERSION}
 
