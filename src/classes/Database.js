@@ -26,6 +26,10 @@ class Database {
 
     this.config = config;
 
+    if (process.env.NODE_ENV === 'test') {
+      this.config.TABLE_PREFIX = 'test_';
+    }
+
     this.casts = {
       updatedAt: 'YYYYMMDD',
       effectiveAt: 'YYYYMMDD',
@@ -42,19 +46,19 @@ class Database {
       transactionId: 'number',
     };
 
-    this.table_names = {
+    this.tables = {
       ADDRESSES: {
         delete_processing: true,
-        processing: 'tmp_addresses',
-        finished: 'addresses',
+        processing: `${this.config.TABLE_PREFIX}tmp_addresses`,
+        finished: `${this.config.TABLE_PREFIX}addresses`,
       },
       ZIPCODES: {
         delete_processing: true,
-        processing: 'tmp_zipcodes',
-        finished: 'zipcodes',
+        processing: `${this.config.TABLE_PREFIX}tmp_zipcodes`,
+        finished: `${this.config.TABLE_PREFIX}zipcodes`,
       },
       ZIPCODE_CHANGES: {
-        processing: 'zipcode_changes',
+        processing: `${this.config.TABLE_PREFIX}zipcode_changes`,
       },
     };
 
@@ -97,7 +101,7 @@ class Database {
    * @returns {Object} - Table configs.
    */
   getTableConfigs = table => (
-    this.table_names[table]
+    this.tables[table]
   )
 
   /**
@@ -195,7 +199,7 @@ class Database {
    */
   addresses = () => (
     this.db.define(
-      `${this.config.TABLE_PREFIX}${this.table_names.ADDRESSES.processing}`,
+      `${this.config.TABLE_PREFIX}${this.tables.ADDRESSES.processing}`,
       {
         id: {
           type: Sequelize.INTEGER(10),
@@ -269,7 +273,7 @@ class Database {
    */
   zipcodes = () => (
     this.db.define(
-      `${this.config.TABLE_PREFIX}${this.table_names.ZIPCODES.processing}`,
+      `${this.config.TABLE_PREFIX}${this.tables.ZIPCODES.processing}`,
       {
         id: {
           type: Sequelize.INTEGER(10),
@@ -325,7 +329,7 @@ class Database {
    */
   zipcodeChanges = () => (
     this.db.define(
-      `${this.config.TABLE_PREFIX}${this.table_names.ZIPCODE_CHANGES.processing}`,
+      `${this.config.TABLE_PREFIX}${this.tables.ZIPCODE_CHANGES.processing}`,
       {
         id: {
           type: Sequelize.INTEGER(10),

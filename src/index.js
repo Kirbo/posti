@@ -7,10 +7,10 @@ import {
 } from './utils';
 
 import Posti from './classes/Posti';
-import Database from './classes/database';
+import Database from './classes/Database';
 
 /**
- * Need to wrap these, so that i can use await
+ * Need to wrap these, so that i can use await.
  *
  * @returns {void}
 */
@@ -20,10 +20,10 @@ const start = async () => {
   const files = await posti.fecthFileUrls();
   const newFiles = await posti.getNewFiles();
 
-  if (newFiles.length > 0) {
+  if (newFiles.length) {
     const database = new Database();
     global.database = database;
-    await database.connect(newFiles.map(file => file.model));
+    await database.connect();
     await database.createTempTables();
     await posti.setNewFiles(newFiles);
     await posti.processFiles(files);

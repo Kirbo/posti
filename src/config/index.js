@@ -4,7 +4,7 @@ const CONFIGS = {
     index: 'https://www.posti.fi/webpcode/',
     files: 'http://www.posti.fi/webpcode',
   },
-  delete_on_complete: true, // Should the temporary data directory be removed after all steps.
+  delete_on_complete: !process.env.NODE_ENV === 'test', // Should the temporary data directory be removed after all steps.
   chunk_size: 1000, // In how big chunks do we want to insert the data into database.
   concurrency: 5,
 };

@@ -104,7 +104,10 @@ const findDatabaseConfig = () => {
   }
 
   if (!customPath && process.env.NODE_ENV) {
-    dbConfigFile = path.resolve(process.env.PWD, `posti.config.${process.env.NODE_ENV}.js`);
+    const envFile = path.resolve(process.env.PWD, `posti.config.${process.env.NODE_ENV}.js`);
+    if (fs.existsSync(envFile)) {
+      dbConfigFile = envFile;
+    }
   }
 
   // If user didn't define config with either env or argument and config wasn't found.
