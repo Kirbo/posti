@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New method `this.setFile(file)` in [src/classes/Posti.js:203](./src/classes/Posti.js), to ease the tests.
 - `delete_on_complete` in [src/config/index.js:7](./src/config/index.js) is set to `false` for tests.
 - `findDatabaseConfig()` in [src/utils/index.js:76](./src/utils/index.js) shouldn't break anymore when using different `NODE_ENV`.
+- Table names and temp table names to use `TABLE_PREFIX` in [src/classes/Database.js:52](./src/classes/Database.js).
 
 ### Removed
 - `posti.config.test.js` file, as it is no longer needed.

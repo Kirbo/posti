@@ -49,16 +49,16 @@ class Database {
     this.tables = {
       ADDRESSES: {
         delete_processing: true,
-        processing: 'tmp_addresses',
-        finished: 'addresses',
+        processing: `${this.config.TABLE_PREFIX}tmp_addresses`,
+        finished: `${this.config.TABLE_PREFIX}addresses`,
       },
       ZIPCODES: {
         delete_processing: true,
-        processing: 'tmp_zipcodes',
-        finished: 'zipcodes',
+        processing: `${this.config.TABLE_PREFIX}tmp_zipcodes`,
+        finished: `${this.config.TABLE_PREFIX}zipcodes`,
       },
       ZIPCODE_CHANGES: {
-        processing: 'zipcode_changes',
+        processing: `${this.config.TABLE_PREFIX}zipcode_changes`,
       },
     };
 
