@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.0.6] - 2018-03-14
+
+### Added
+- Lots of more tests.
+- New `test-debug` script.
+
+### Changed
+- Coverage percentage in badge back to contain `% Funcs` instead of `% Branch`.
+- Run the tests serially instead in parallel.
+- Fixed bug with table prefixes.
+- Remove the test tables after tests.
+
+
 ## [0.0.5] - 2018-03-14
 
 ### Added

@@ -88,6 +88,15 @@ class Posti {
    *
    * @returns {Array<Object>} - Last files processed
    */
+  setLatest = async () => {
+    this.latest = await this.getLatest();
+  };
+
+  /**
+   * Get last processed files
+   *
+   * @returns {Array<Object>} - Last files processed
+   */
   getLatest = async () => {
     if (fs.existsSync(this.latestFile)) {
       const files = fs.readFileSync(this.latestFile, 'utf8');
@@ -215,7 +224,7 @@ class Posti {
     this.setFile(file);
 
     // This file hasn't been processed yet.
-    if (!this.latest.includes(file.filename)) {
+    if (this.newFiles.includes(file)) {
       logBlock(`Processing file: ${file.filename}`);
       await this.downloadFile();
       await this.unzipFile();
@@ -234,7 +243,9 @@ class Posti {
         .then(() => {
           // Drop it like its hot.
           logStep(`Drop temp table '${tableConfigs.processing}'`);
-          return global.database.getDb().getQueryInterface().dropTable(tableConfigs.processing);
+          return global.database.getDb().getQueryInterface().dropTable(tableConfigs.processing)
+            .then(() => true)
+            .catch(() => false);
         })
         .catch((error) => {
           logError(error);
