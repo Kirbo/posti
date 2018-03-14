@@ -3,15 +3,51 @@ import 'jest-plugin-console-matchers/setup';
 import path from 'path';
 import os from 'os';
 import fs from 'fs-extra';
+import Promise from 'bluebird';
 
 import Posti from './Posti';
+import Database from './Database';
 
 const posti = new Posti();
+global.database = new Database();
 
-const tempDir = path.resolve(`${os.homedir()}/.posti/data`);
+const latest = 'test_latest.json';
+const cacheDir = path.resolve(`${os.homedir()}/.posti`);
+const latestFile = path.resolve(`${cacheDir}/${latest}`);
+const tempDir = path.resolve(`${cacheDir}/data`);
+
 let files;
 
-describe('Posti', () => {
+describe.only('Posti', () => {
+  beforeAll(async () => {
+    jest.setTimeout(10 * 60 * 1000); // Set timeout to 10 minutes
+    await global.database.connect();
+  });
+
+  afterAll(async () => {
+    const tables = [
+      'ADDRESSES',
+      'ZIPCODES',
+      'ZIPCODE_CHANGES',
+    ];
+
+    return Promise
+      .each(tables, async (table) => {
+        const tableConfigs = global.database.getTableConfigs(table);
+        return new Promise(async (resolve) => {
+          await global.database.getDb().getQueryInterface().dropTable(tableConfigs.processing)
+            .then(() => true)
+            .catch(() => false);
+          if (tableConfigs.finished) {
+            await global.database.getDb().getQueryInterface().dropTable(tableConfigs.finished)
+              .then(() => true)
+              .catch(() => false);
+          }
+          resolve();
+        });
+      });
+  });
+
   test('should get model for file BAF', () => {
     expect(posti.getModel('BAF')).toBe('ADDRESSES');
   });
@@ -27,6 +63,10 @@ describe('Posti', () => {
 
   test('should ensure cache dir', async () => {
     expect(await posti.createCacheDir()).toBe(undefined);
+  });
+  test('should not get latest files', async () => {
+    fs.removeSync(latestFile);
+    expect(await posti.getNewFiles()).toEqual([]);
   });
   test('should write latest files', async () => {
     expect(posti.writeLatest('test,testing,it works')).toBe(undefined);
@@ -54,40 +94,24 @@ describe('Posti', () => {
     expect(files[2].model).toBe('ZIPCODE_CHANGES');
   });
 
-  test('should download ZIPCODES file', async () => {
-    jest.setTimeout(10 * 60 * 1000); // Set timeout to 10 minutes
+  test('should process all files', async () => {
+    await posti.createCacheDir();
+
+    await global.database.createTempTables();
+
     const file = files.find(f => f.model === 'ZIPCODES');
-    await posti.setFile(file);
-    await posti.downloadFile();
-    const dataDir = fs.readdirSync(tempDir);
-    expect(dataDir).toContain(file.filename);
+
+    await posti.setNewFiles([file]);
+    await posti.processFiles(files);
   });
 
-  test('should unzip ZIPCODES file', async () => {
-    jest.setTimeout(10 * 60 * 1000); // Set timeout to 10 minutes
-    const file = files.find(f => f.model === 'ZIPCODES');
-    await posti.setFile(file);
-    await posti.unzipFile();
-    const dataDir = fs.readdirSync(tempDir);
-    expect(dataDir).toContain(`${file.extensionless}.dat`);
-  });
+  test('should skip processing ZIPCODES file', async () => {
+    await global.database.createTempTables();
 
-  test('should convert ZIPCODES file', async () => {
-    jest.setTimeout(10 * 60 * 1000); // Set timeout to 10 minutes
     const file = files.find(f => f.model === 'ZIPCODES');
-    await posti.setFile(file);
-    await posti.convertFile();
-    const dataDir = fs.readdirSync(tempDir);
-    expect(dataDir).toContain(`${file.extensionless}_utf8.dat`);
-  });
 
-  test.skip('should parse ZIPCODES file', async () => {
-    jest.setTimeout(10 * 60 * 1000); // Set timeout to 10 minutes
-    const file = files.find(f => f.model === 'ZIPCODES');
-    await posti.setFile(file);
-    await posti.parseFile();
-    const dataDir = fs.readdirSync(tempDir);
-    expect(dataDir).toContain(`${file.extensionless}_utf8.dat`);
+    await posti.setLatest();
+    await posti.processFile(file);
   });
 
   test('should remove temp files', async () => {

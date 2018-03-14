@@ -44,6 +44,7 @@ class Database {
       typeCode: 'number',
       municipalityLanguage: 'number',
       transactionId: 'number',
+      default: 'default',
     };
 
     this.tables = {
@@ -199,7 +200,7 @@ class Database {
    */
   addresses = () => (
     this.db.define(
-      `${this.config.TABLE_PREFIX}${this.tables.ADDRESSES.processing}`,
+      this.tables.ADDRESSES.processing,
       {
         id: {
           type: Sequelize.INTEGER(10),
@@ -273,7 +274,7 @@ class Database {
    */
   zipcodes = () => (
     this.db.define(
-      `${this.config.TABLE_PREFIX}${this.tables.ZIPCODES.processing}`,
+      this.tables.ZIPCODES.processing,
       {
         id: {
           type: Sequelize.INTEGER(10),
@@ -329,7 +330,7 @@ class Database {
    */
   zipcodeChanges = () => (
     this.db.define(
-      `${this.config.TABLE_PREFIX}${this.tables.ZIPCODE_CHANGES.processing}`,
+      this.tables.ZIPCODE_CHANGES.processing,
       {
         id: {
           type: Sequelize.INTEGER(10),
