@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import _colors from 'colors';
+
 import packageJSON from '../../package.json';
 
 /**
@@ -12,7 +13,7 @@ import packageJSON from '../../package.json';
  * @returns {void}
  */
 const logBlock = (block) => {
-  console.info(`${_colors.green('***')} ${block}`); // eslint-disable-line
+  console.info(`${_colors.green('***')} ${block}`);
 };
 
 /**
@@ -23,7 +24,7 @@ const logBlock = (block) => {
  * @returns {void}
  */
 const logStep = (step) => {
-  console.info(`${_colors.yellow('    *')} ${step}`); // eslint-disable-line
+  console.info(`${_colors.yellow('    *')} ${step}`);
 };
 
 /**
@@ -34,7 +35,7 @@ const logStep = (step) => {
  * @returns {void}
  */
 const logError = (error) => {
-  console.error(`${_colors.red('!!!')} ${error} ${_colors.red('!!!')}`); // eslint-disable-line
+  console.error(`${_colors.red('!!!')} ${error} ${_colors.red('!!!')}`);
   throw new Error(error);
 };
 
@@ -46,12 +47,11 @@ const logError = (error) => {
  * @returns {void}
  */
 const logFinished = (text) => {
-  console.info(`-----\n🍺 ${_colors.green(text)}\n`); // eslint-disable-line
+  console.info(`-----\n${_colors.green(`Finished in: ${text}`)}\n`);
 };
 
-
 /**
- * Slice the array ingo smaller chunks.
+ * Slice the array into smaller chunks.
  *
  * @param {Array} array - Array.
  * @param {Integer} size - Size of the chunk.
@@ -71,30 +71,32 @@ const sliceArrayIntoChunks = (array, size) => {
 /**
  * Find Database configs.
  *
- * @returns {String} - Path to configs.
-*/
-const findDatabaseConfig = () => {
+ * @param {Object} proc - proc.
+ *
+ * @returns {String} Path to configs.
+ */
+const findDatabaseConfig = (proc = process) => {
   let dbConfigFile;
   let customPath;
-  const args = process.argv.slice(2);
+  const args = proc.argv.slice(2);
 
   const BINARY_NAME = Object.keys(packageJSON.bin)[0];
 
   // If user defined config with env.
-  if (process.env.config) {
-    customPath = process.env.config;
-    // If user defined config with arguments.
+  if (proc.env.config) {
+    customPath = proc.env.config;
+    // If user defined config with proc.
   } else if (args.length > 0) {
     const regex = /--config="?(.*)"?/;
     const configArg = args.find(a => a.match(regex));
     // If "--config" argument was found.
     if (configArg) {
-      customPath = configArg.match(regex)[1].replace('~', os.homedir());
+      customPath = configArg.match(regex)[1].toString();
     }
   }
 
   // Default config path.
-  dbConfigFile = path.resolve(process.env.PWD, 'posti.config.js');
+  dbConfigFile = path.resolve(proc.env.PWD, 'posti.config.js');
   // Config in user homedir.
   const homeDbConfigFile = path.resolve(os.homedir(), '.posti/config.js');
 
@@ -103,8 +105,8 @@ const findDatabaseConfig = () => {
     dbConfigFile = homeDbConfigFile;
   }
 
-  if (!customPath && process.env.NODE_ENV) {
-    const envFile = path.resolve(process.env.PWD, `posti.config.${process.env.NODE_ENV}.js`);
+  if (!customPath && proc.env.NODE_ENV) {
+    const envFile = path.resolve(proc.env.PWD, `posti.config.${proc.env.NODE_ENV}.js`);
     if (fs.existsSync(envFile)) {
       dbConfigFile = envFile;
     }
@@ -112,39 +114,77 @@ const findDatabaseConfig = () => {
 
   // If user didn't define config with either env or argument and config wasn't found.
   if (!customPath && !fs.existsSync(dbConfigFile)) {
-    /* eslint-disable */
-    console.error(`
-${_colors.red('Config not found.')}
-${_colors.grey('Define config in one of the following paths:')}
-  ${dbConfigFile}
-  ${homeDbConfigFile}
+    console.error(_colors.red('Config not found.'));
+    console.error(_colors.grey('Define config in one of the following paths:'));
+    console.error(`  ${dbConfigFile}`);
+    console.error(`  ${homeDbConfigFile}`);
+    console.error();
+    console.error(_colors.grey('..or define the path with one of the following ways:'));
+    console.error(`    ${BINARY_NAME} --config=/path/to/config.js`);
+    console.error(`    config=/path/to/config.js ${BINARY_NAME}`);
 
-${_colors.grey('..or define the path with one of the following ways:')}
-    ${BINARY_NAME} --config=/path/to/config.js
-    config=/path/to/config.js ${BINARY_NAME}
-`);
-    /* eslint-enable */
-    process.exit(1);
+    proc.exit(1);
   }
 
   // If user defined the custom config path with either arg or env.
   if (customPath) {
-    dbConfigFile = customPath;
+    dbConfigFile = customPath.replace('~', os.homedir());
   }
 
   // If the config file is not found.
   if (!fs.existsSync(dbConfigFile)) {
-    /* eslint-disable */
-    console.error(`
-${_colors.red('Config not found from:')}
-  ${dbConfigFile}
-  `);
-    /* eslint-enable */
-    process.exit(1);
+    console.error(_colors.red('Config not found from:'));
+    console.error(`  ${dbConfigFile}`);
+
+    proc.exit(1);
   }
 
   return dbConfigFile;
 };
+
+/**
+ * Convert milliseconds to time duration.
+ *
+ * @param {Integer} duration - Duration.
+ *
+ * @returns {String} - Human readable duration.
+ */
+const millisecondsToTime = (duration) => {
+  let milliseconds = parseInt(duration % 1000, 10);
+  let seconds = 0;
+  let minutes = 0;
+  let hours = 0;
+
+  if (duration >= 1000) {
+    seconds = parseInt((duration / 1000) % 60, 10);
+  }
+  if (duration >= (60 * 1000)) {
+    minutes = parseInt((duration / (1000 * 60)) % 60, 10);
+  }
+  if (duration >= (60 * 60 * 1000)) {
+    hours = parseInt((duration / (1000 * 60 * 60)) % 24, 10);
+  }
+
+  hours = (hours < 10) ? `0${hours}` : hours;
+  minutes = (minutes < 10) ? `0${minutes}` : minutes;
+  seconds = (seconds < 10) ? `0${seconds}` : seconds;
+  if (milliseconds < 10) {
+    milliseconds = `00${milliseconds}`;
+  } else if (milliseconds < 100) {
+    milliseconds = `0${milliseconds}`;
+  }
+
+  return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+};
+
+/**
+ * Return false.
+ *
+ * @returns {false} False.
+ */
+const returnFalse = () => (
+  false
+);
 
 export {
   logBlock,
@@ -153,4 +193,6 @@ export {
   logFinished,
   sliceArrayIntoChunks,
   findDatabaseConfig,
+  millisecondsToTime,
+  returnFalse,
 };

@@ -7,6 +7,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: [
     '/src/config/',
+    '/src/posti.js',
     '/src/index.js',
   ],
   coverageReporters: [
