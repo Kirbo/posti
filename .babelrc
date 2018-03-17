@@ -15,7 +15,7 @@
       "presets": [
         ["env", {
           "targets": {
-            "node": "0.10.0"
+            "node": "0.1.0"
           },
           "loose": true,
           "useBuiltIns": true,
