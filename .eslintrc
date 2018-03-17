@@ -56,7 +56,9 @@
         "ArrowFunctionExpression": true,
         "FunctionExpression": true
       }
-    }]
+    }],
+    "no-console": ["warn", { "allow": ["info", "error", "time", "timeEnd"] }],
+    "no-param-reassign": ["error", { "props": false }]
   },
   "parserOptions": {
     "ecmaFeatures": {

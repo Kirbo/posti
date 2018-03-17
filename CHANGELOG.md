@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.1.0] - 2018-03-17
+
+### Added
+- Disclaimer in `README.md`.
+- Links to Finnish, English and Swedish Postal Code Services site, Terms of use and Frequently asked questions.
+- Babel polyfill in `src/posti.js`.
+
+### Changed
+- Breaking changes to config file, check the [latest config here](./posti.config.example.js).
+- Major refactoring.
+- Updated dependencies.
+- Run tests in parallel instead in serially.
+- Coverage percentage in badge to contain `% Branch` instead of `% Funcs`.
+- Table `zipcode_changes` renamed to `postalcode_changes`.
+- Table `zipcodes` renamed to `postalcodes`.
+- `Stage-0` into `Stage-2`.
+
+### Fixed
+- Bug showing incorrect number of lines being inserted.
+
 ## [0.0.6] - 2018-03-14
 
 ### Added

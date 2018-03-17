@@ -5,7 +5,7 @@
         "node": "current"
       }
     }],
-    "stage-0"
+    "stage-2"
   ],
   "env": {
     "build": {
@@ -15,13 +15,13 @@
       "presets": [
         ["env", {
           "targets": {
-            "node": "0.10.0"
+            "node": "0.1.0"
           },
           "loose": true,
           "useBuiltIns": true,
           "debug": true
         }],
-        "stage-0",
+        "stage-2",
         ["minify", {
           "mangle": false
         }]

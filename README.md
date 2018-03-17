@@ -7,21 +7,35 @@
 
 `posti` is a tool to automagically download latest basic address data from [Finnish post - Posti](https://www.posti.fi/), to parse the files and insert the contents into database.
 
+## Changelog
+
+Check changes [here](./CHANGELOG.md).
+
 ## Posti
 
-- Address for official Posti Postal Code Files:
+**Postal Code Services - Homepage:**
 
-  https://www.posti.fi/yritysasiakkaat/apu-ja-tuki/postinumeropalvelut/postinumerotiedostot.html
+  - [Finnish](https://www.posti.fi/yritysasiakkaat/apu-ja-tuki/postinumeropalvelut/postinumerotiedostot.html)
+  - [English](https://www.posti.fi/business/help-and-support/postal-code-services/postal-code-files.html)
+  - [Swedish](https://www.posti.fi/foretag/hjalp-och-stod/postnummertjanster/postnummerfiler.html)
 
-- Posti Terms Of Use (Finnish only):
+**Postal Code Services – Service Description and Terms Of Use:**
 
-  https://www.posti.fi/liitteet-yrityksille/ehdot/postinumeropalvelut-palvelukuvaus-ja-kayttoehdot.pdf
+  - [Finnish](https://www.posti.fi/liitteet-yrityksille/ehdot/postinumeropalvelut-palvelukuvaus-ja-kayttoehdot.pdf)
+  - [English](https://www.posti.fi/liitteet-yrityksille/ehdot/postinumeropalvelut-palvelukuvaus-ja-kayttoehdot-en.pdf)
+  - [Swedish](https://www.posti.fi/liitteet-yrityksille/ehdot/postinumeropalvelut-palvelukuvaus-ja-kayttoehdot-sv.pdf)
+
+**Postal Code Services – Frequently Asked Questions:**
+
+  - [Finnish](https://www.posti.fi/liitteet-yrityksille/muut/postinumeropalvelut-faq.pdf)
+  - [English](https://www.posti.fi/liitteet-yrityksille/muut/postinumeropalvelut-faq-en.pdf)
+  - [Swedish](https://www.posti.fi/liitteet-yrityksille/muut/postinumeropalvelut-faq-sv.pdf)
 
 There are 3 different files:
 
-* **BAF** (Basic Addresses File) - Updated every saturday at 13:00 (1:00 PM) GMT+0
+* **BAF** (Basic Address File) - Updated every saturday at 13:00 (1:00 PM) GMT+0
 * **PCF** (Postal Code File) -  Updated every day at 13:00 (1:00 PM) GMT+0
-* **POM** (Post Office Changes) -  Updated on 2nd day of each month at 13:00 (1:00 PM) GMT+0
+* **POM** (Postal Code Changes) -  Updated on 2nd day of each month at 13:00 (1:00 PM) GMT+0
 
 This tool downloads the latest files and processes only the ones that have been updated,
 so you can setup the automation to be run as often as you like, but I would suggest you not to
@@ -73,12 +87,19 @@ npm install posti
 2. Create a `posti.config.js` file in your project root:
 ```javascript
 module.exports.default = {
-  DIALECT: 'mysql', // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
-  HOST: 'example.com',
-  USER: 'POSTI',
-  PASSWORD: 'user',
-  DATABASE: 'password',
-  OPTIONS: {}, // http://docs.sequelizejs.com/manual/installation/usage.html#options
+  dialect: 'mysql', // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
+  host: 'example.com',
+  user: 'user',
+  password: 'password',
+  database: 'database',
+  tablePrefix: 'posti_',
+  dialectOptions: {}, // http://docs.sequelizejs.com/manual/installation/usage.html#options
+
+  app: {
+    chunkSize: 1000, // In how big chunks do we want to insert the data into database.
+    concurrency: 5, // Number of concurrent inserts.
+    deleteOnComplete: true, // Should the temporary data directory be removed after script finishes.
+  },
 };
 ```
 
@@ -111,12 +132,19 @@ npm install -g posti
 2. Create a `.posti/config.js` file in your home dir:
 ```javascript
 module.exports.default = {
-  DIALECT: 'mysql', // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
-  HOST: 'example.com',
-  USER: 'POSTI',
-  PASSWORD: 'user',
-  DATABASE: 'password',
-  OPTIONS: {}, // http://docs.sequelizejs.com/manual/installation/usage.html#options
+  dialect: 'mysql', // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
+  host: 'example.com',
+  user: 'user',
+  password: 'password',
+  database: 'database',
+  tablePrefix: 'posti_',
+  dialectOptions: {}, // http://docs.sequelizejs.com/manual/installation/usage.html#options
+
+  app: {
+    chunkSize: 1000, // In how big chunks do we want to insert the data into database.
+    concurrency: 5, // Number of concurrent inserts.
+    deleteOnComplete: true, // Should the temporary data directory be removed after script finishes.
+  },
 };
 ```
 
@@ -129,6 +157,11 @@ posti
 
 - [Screencapture](https://posti.devaus.eu/screencapture.gif)
 - [Screenshot](https://posti.devaus.eu/screenshot.png)
+
+## Disclaimer
+
+I am not in any way affiliated with nor do I represent anything from [Finnish post - Posti](https://www.posti.fi/).
+
 
 ## License
 
