@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Disclaimer in `README.md`.
-- Links to Finnish, English and Swedish Posti site, Terms of use and Frequently asked questions.
+- Links to Finnish, English and Swedish Postal Code Services site, Terms of use and Frequently asked questions.
 
 ### Changed
 - Breaking changes to config file, check the [latest config here](./posti.config.example.js).
@@ -19,8 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated dependencies.
 - Run tests in parallel instead in serially.
 - Coverage percentage in badge to contain `% Branch` instead of `% Funcs`.
-- Table name: `zipcode_changes` into `postalcode_changes`.
-- Table name: `zipcodes` into `postalcodes`.
+- Table `zipcode_changes` renamed to `postalcode_changes`.
+- Table `zipcodes` renamed to `postalcodes`.
 
 
 ## [0.0.6] - 2018-03-14
