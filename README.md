@@ -9,7 +9,7 @@
 
 ## Changelog
 
-Check changes[here](./CHANGELOG.md).
+Check changes [here](./CHANGELOG.md).
 
 ## Posti
 
