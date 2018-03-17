@@ -66,6 +66,7 @@ publish to npm:
     - build
   allow_failure: false
   script:
+    - echo "Publish version $(node -p -e "require('./package.json').version")"
     - yarn publish --new-version $(node -p -e "require('./package.json').version")
 
 update pages:
