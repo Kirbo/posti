@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.1.1] - 2018-03-17
 
 ### Fixed
-- Bug showing incorrect number of lines being inserted.
+- Bug showing incorrect number of lines inserted.
 
 
 ## [0.1.0] - 2018-03-17
