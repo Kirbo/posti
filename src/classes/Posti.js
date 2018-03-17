@@ -312,7 +312,7 @@ class Posti {
           })
           .on('close', () => {
             logStep(`Inserting into temp table '${tableConfigs.nameProcessing}'`);
-            PROGRESS.start((rows.length - 1), 0);
+            PROGRESS.start(rows.length, 0);
             Promise
               .map(sliceArrayIntoChunks(rows, global.config.process.chunkSize), insertChunk, { concurrency: global.config.process.concurrency })
               .then(() => {

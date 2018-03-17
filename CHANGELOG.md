@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Table `zipcode_changes` renamed to `postalcode_changes`.
 - Table `zipcodes` renamed to `postalcodes`.
 
+### Fixed
+- Bug showing incorrect number of lines being inserted.
 
 ## [0.0.6] - 2018-03-14
 
