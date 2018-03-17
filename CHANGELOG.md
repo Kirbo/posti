@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Links to Finnish, English and Swedish Posti site, Terms of use and Frequently asked questions.
 
 ### Changed
-- Breaking changes to config file.
+- Breaking changes to config file, check the [latest config here](./posti.config.example.js).
 - Major refactoring.
 - Updated dependencies.
 - Run tests in parallel instead in serially.
