@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.1.5] - 2018-03-17
+
+### Changed
+- `tablePrefix` in tests from `test_` into `${tablePrefix}test_`.
+
+
 ## [0.1.4] - 2018-03-17
 
 ### Changed
