@@ -6,7 +6,8 @@ import Sequelize from './Sequelize';
 
 const configPath = findDatabaseConfig();
 global.config = require(configPath).default;
-global.config.tablePrefix = 'test_sequelize_';
+const originalTablePrefix = global.config.tablePrefix;
+global.config.tablePrefix = `${global.config.tablePrefix}test_sequelize_`;
 
 const database = new Sequelize();
 
@@ -32,9 +33,9 @@ describe('Sequelize', () => {
 
   describe('getTableName()', () => {
     test('should get nameProcessing for tables', async () => {
-      expect(database.getTableName('ADDRESSES').nameProcessing).toBe('test_sequelize_temp_addresses');
-      expect(database.getTableName('ZIPCODES').nameProcessing).toBe('test_sequelize_temp_postalcodes');
-      expect(database.getTableName('ZIPCODE_CHANGES').nameProcessing).toBe('test_sequelize_postalcode_changes');
+      expect(database.getTableName('ADDRESSES').nameProcessing).toBe(`${originalTablePrefix}test_sequelize_temp_addresses`);
+      expect(database.getTableName('ZIPCODES').nameProcessing).toBe(`${originalTablePrefix}test_sequelize_temp_postalcodes`);
+      expect(database.getTableName('ZIPCODE_CHANGES').nameProcessing).toBe(`${originalTablePrefix}test_sequelize_postalcode_changes`);
     });
   });
 

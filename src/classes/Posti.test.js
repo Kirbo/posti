@@ -14,7 +14,7 @@ import postiConfig from '../config';
 
 const configPath = findDatabaseConfig();
 global.config = require(configPath).default;
-global.config.tablePrefix = 'test_posti_';
+global.config.tablePrefix = `${global.config.tablePrefix}test_posti_`;
 global.postiConfig = postiConfig;
 
 const posti = new Posti();
