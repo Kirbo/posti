@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.1.4] - 2018-03-17
+
+### Changed
+- CI/CD pipeline to publish with `npm` instead of `yarn`.
+
+
+## [0.1.3] - 2018-03-17
+
+### Changed
+- Manually tested publishing, since `yarn` gave error "Cannot publish over previously published version".
+
+
 ## [0.1.2] - 2018-03-17
 
 ### Changed
