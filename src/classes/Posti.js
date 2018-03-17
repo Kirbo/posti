@@ -297,7 +297,7 @@ class Posti {
         const insertChunk = chunk => (
           databaseModel
             .bulkCreate(chunk)
-            .then(() => PROGRESS.increment(global.config.process.chunkSize))
+            .then(() => PROGRESS.increment(chunk.length))
             .catch(logError)
         );
 
