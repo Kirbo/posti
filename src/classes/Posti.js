@@ -65,11 +65,13 @@ class Posti {
   /**
    * Check if there are any new files.
    *
+   * @param {Object} proc - Process.
+   *
    * @returns {Array<Object>} Array of new files.
    */
-  getNewFiles = async () => {
+  getNewFiles = async (proc = process) => {
     this.latest = await this.getLatest();
-    if (process.env.force) {
+    if (proc.env.force) {
       logBlock('Force update all');
       this.latest = [];
     }
@@ -118,10 +120,6 @@ class Posti {
     logBlock('Fetching file list');
     return new Promise((resolve) => {
       request(global.postiConfig.webpcode.index, (err, res, body) => {
-        if (err) {
-          logError(err);
-        }
-
         this.files = body
           .match(/href="((.*)?webpcode\/[BAF|PCF|POM](.*)\.zip)"/g)
           .map((url) => {
@@ -154,6 +152,7 @@ class Posti {
         if (global.config.process.deleteOnComplete) {
           this.removeFiles();
         }
+
         this.writeLatest(files.map(file => file.filename));
       })
   )
@@ -175,12 +174,12 @@ class Posti {
       await this.unzipFile();
       await this.convertFile();
       await this.parseFile();
-      return this.clean(file);
+      return this.clean();
     }
 
     // This file has already been processed.
     logBlock(`Skipping file: ${file.filename}`);
-    return this.clean(file);
+    return this.clean();
   };
 
   /**
@@ -329,6 +328,8 @@ class Posti {
                 resolve();
               });
           });
+      } else {
+        resolve();
       }
     })
   );
@@ -340,13 +341,15 @@ class Posti {
    *
    * @returns {void}
    */
-  clean = async (file) => {
+  clean = async () => {
     logStep('Cleaning up');
-    const tableConfigs = global.database.getTableConfigs(file.model);
-    const oldTable = await global.database.tableExists(`${tableConfigs.nameFinished}_old`);
+    const tableConfigs = global.database.getTableConfigs(this.file.model);
+    if (tableConfigs) {
+      const oldTable = await global.database.tableExists(`${tableConfigs.nameFinished}_old`);
 
-    if (oldTable && tableConfigs.deleteOnceComplete) {
-      return global.database.dropTable(`${tableConfigs.nameFinished}_old`);
+      if (oldTable && tableConfigs.deleteOnceComplete) {
+        return global.database.dropTable(`${tableConfigs.nameFinished}_old`);
+      }
     }
   }
 

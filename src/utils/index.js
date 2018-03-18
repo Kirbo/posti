@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import _colors from 'colors';
@@ -71,53 +71,59 @@ const sliceArrayIntoChunks = (array, size) => {
 /**
  * Find Database configs.
  *
- * @param {Object} proc - proc.
+ * @param {String} prefix - Prefix.
+ * @param {Object} proc - Process.
  *
  * @returns {String} Path to configs.
  */
-const findDatabaseConfig = (proc = process) => {
-  let dbConfigFile;
+const findDatabaseConfig = (prefix = '', proc = process) => {
+  let returnConfigFile;
   let customPath;
   const args = proc.argv.slice(2);
 
   const BINARY_NAME = Object.keys(packageJSON.bin)[0];
 
-  // If user defined config with env.
+  const projectNodeEnvConfig = path.resolve(proc.env.PWD, `${prefix}posti.config.${proc.env.NODE_ENV}.js`);
+  const projectConfig = path.resolve(proc.env.PWD, `${prefix}posti.config.js`);
+  const homeConfig = path.resolve(os.homedir(), `.posti/${prefix}config.js`);
+
   if (proc.env.config) {
     customPath = proc.env.config;
-    // If user defined config with proc.
+    returnConfigFile = customPath;
   } else if (args.length > 0) {
     const regex = /--config="?(.*)"?/;
     const configArg = args.find(a => a.match(regex));
-    // If "--config" argument was found.
     if (configArg) {
       customPath = configArg.match(regex)[1].toString();
+      returnConfigFile = customPath;
     }
   }
 
-  // Default config path.
-  dbConfigFile = path.resolve(proc.env.PWD, 'posti.config.js');
-  // Config in user homedir.
-  const homeDbConfigFile = path.resolve(os.homedir(), '.posti/config.js');
-
-  // Check default config file is not found and config is found in homedir.
-  if (!fs.existsSync(dbConfigFile) && fs.existsSync(homeDbConfigFile)) {
-    dbConfigFile = homeDbConfigFile;
+  if (fs.existsSync(projectNodeEnvConfig)) {
+    returnConfigFile = projectNodeEnvConfig;
+  } else if (fs.existsSync(projectConfig)) {
+    returnConfigFile = projectConfig;
+  } else if (fs.existsSync(homeConfig)) {
+    returnConfigFile = homeConfig;
   }
 
-  if (!customPath && proc.env.NODE_ENV) {
-    const envFile = path.resolve(proc.env.PWD, `posti.config.${proc.env.NODE_ENV}.js`);
-    if (fs.existsSync(envFile)) {
-      dbConfigFile = envFile;
+  if (returnConfigFile) {
+    returnConfigFile = returnConfigFile.replace('~', os.homedir());
+  }
+
+  if (fs.existsSync(returnConfigFile)) {
+    return returnConfigFile;
+  } else {
+    if (customPath) {
+      console.error(_colors.red('Config not found from:'));
+      console.error(`  ${customPath}`);
+    } else {
+      console.error(_colors.red('Config not found.'));
     }
-  }
-
-  // If user didn't define config with either env or argument and config wasn't found.
-  if (!customPath && !fs.existsSync(dbConfigFile)) {
-    console.error(_colors.red('Config not found.'));
     console.error(_colors.grey('Define config in one of the following paths:'));
-    console.error(`  ${dbConfigFile}`);
-    console.error(`  ${homeDbConfigFile}`);
+    console.error(`  ${projectNodeEnvConfig}`);
+    console.error(`  ${projectConfig}`);
+    console.error(`  ${homeConfig}`);
     console.error();
     console.error(_colors.grey('..or define the path with one of the following ways:'));
     console.error(`    ${BINARY_NAME} --config=/path/to/config.js`);
@@ -125,21 +131,6 @@ const findDatabaseConfig = (proc = process) => {
 
     proc.exit(1);
   }
-
-  // If user defined the custom config path with either arg or env.
-  if (customPath) {
-    dbConfigFile = customPath.replace('~', os.homedir());
-  }
-
-  // If the config file is not found.
-  if (!fs.existsSync(dbConfigFile)) {
-    console.error(_colors.red('Config not found from:'));
-    console.error(`  ${dbConfigFile}`);
-
-    proc.exit(1);
-  }
-
-  return dbConfigFile;
 };
 
 /**
