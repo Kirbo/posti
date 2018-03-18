@@ -2,6 +2,10 @@
 
 ![pipeline status](https://posti.devaus.eu/pipeline.svg)
 ![coverage report](https://posti.devaus.eu/coverage.svg)
+![latest version](https://img.shields.io/github/package-json/v/kirbo/posti.svg)
+![last commit](https://img.shields.io/github/last-commit/kirbo/posti.svg)
+![total downloads](https://img.shields.io/npm/dt/posti.svg)
+![dependencies](https://img.shields.io/librariesio/github/kirbo/posti.svg)
 
 ## Description
 
