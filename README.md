@@ -80,87 +80,55 @@ You can bypass the checks and force this tool to process each of the files, by `
 
 ## Installation as a dependency for your project
 1. Install the dependency
-```
-yarn add posti
-```
-or:
-```
-npm install posti
-```
+   ```
+   yarn add posti
+   ```
+   or:
+   ```
+   npm install posti
+   ```
 
-2. Create a `posti.config.js` file in your project root:
-```javascript
-module.exports.default = {
-  dialect: 'mysql', // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
-  host: 'example.com',
-  user: 'user',
-  password: 'password',
-  database: 'database',
-  tablePrefix: 'posti_',
-  dialectOptions: {}, // http://docs.sequelizejs.com/manual/installation/usage.html#options
-
-  app: {
-    chunkSize: 1000, // In how big chunks do we want to insert the data into database.
-    concurrency: 5, // Number of concurrent inserts.
-    deleteOnComplete: true, // Should the temporary data directory be removed after script finishes.
-  },
-};
-```
+2. Create a `posti.config.js` file in your project root with the contents of [posti.config.example.js](./posti.config.example.js)
 
 3. Create a `npm` script in your `package.json` file:
-```javascript
-"scripts": {
-  "update-posti": "posti"
-}
-```
+   ```javascript
+   "scripts": {
+     "update-posti": "posti"
+   }
+   ```
 
 4. Run the script:
-```
-yarn update-posti
-```
-or:
-```
-npm run update-posti
-```
+   ```
+   yarn update-posti
+   ```
+   or:
+   ```
+   npm run update-posti
+   ```
 
 ## Installation as a global command
 1. Install the package
-```
-yarn global add posti
-```
-or:
-```
-npm install -g posti
-```
+   ```
+   yarn global add posti
+   ```
+   or:
+   ```
+   npm install -g posti
+   ```
 
-2. Create a `.posti/config.js` file in your home dir:
-```javascript
-module.exports.default = {
-  dialect: 'mysql', // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
-  host: 'example.com',
-  user: 'user',
-  password: 'password',
-  database: 'database',
-  tablePrefix: 'posti_',
-  dialectOptions: {}, // http://docs.sequelizejs.com/manual/installation/usage.html#options
-
-  app: {
-    chunkSize: 1000, // In how big chunks do we want to insert the data into database.
-    concurrency: 5, // Number of concurrent inserts.
-    deleteOnComplete: true, // Should the temporary data directory be removed after script finishes.
-  },
-};
-```
+2. Create a `.posti/config.js` file in your home dir with the contents of [posti.config.example.js](./posti.config.example.js)
 
 3. Run the script:
-```
-posti
-```
+   ```
+   posti
+   ```
 
-## Screenshots
+## Links
 
-- [Screencapture](https://posti.devaus.eu/screencapture.gif)
-- [Screenshot](https://posti.devaus.eu/screenshot.png)
+- [Test coverages](https://posti.devaus.eu/coverage/)
+- [Screencapture of running the script](https://posti.devaus.eu/screencapture.gif)
+- [Screenshot of executed script](https://posti.devaus.eu/screenshot.png)
+- [Screenshot of executed tests](https://posti.devaus.eu/tests.png)
 
 ## Disclaimer
 
