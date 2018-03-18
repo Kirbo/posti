@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.2.1] - 2018-03-18
+
+### Added
+- Screenshot of test output.
+- Added link to test coverages.
+
+### Changed
+- Fixed [README.md](./README.md) installation instructions (obsolete config examples).
+- Renamed "Screenshots" section to be "Links" in [README.md](./README.md).
+
+
 ## [0.2.0] - 2018-03-18
 
 ### Breaking changes
