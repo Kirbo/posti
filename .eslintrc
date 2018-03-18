@@ -57,7 +57,7 @@
         "FunctionExpression": true
       }
     }],
-    "no-console": ["warn", { "allow": ["info", "error", "time", "timeEnd"] }],
+    "no-console": ["error", { "allow": ["info", "error", "time", "timeEnd"] }],
     "no-param-reassign": ["error", { "props": false }]
   },
   "parserOptions": {

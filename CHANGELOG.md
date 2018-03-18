@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Couple of badges more into [README.md](./README.md).
-- Lots of more tests (now everything is 100% 🎉🎊🥂).
+- Lots of improvements in tests (now everything is 100% 🎉🎊🥂).
+
+### Changed
+- `no-console` eslint rule to give `error` instead of `warning`.
 
 
 ## [0.1.5] - 2018-03-17

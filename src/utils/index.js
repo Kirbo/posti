@@ -112,7 +112,6 @@ const findDatabaseConfig = (prefix = '', proc = process) => {
   }
 
   if (fs.existsSync(returnConfigFile)) {
-    console.log('löytyy kyllä: ', returnConfigFile);
     return returnConfigFile;
   } else {
     if (customPath) {
