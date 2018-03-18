@@ -32,10 +32,19 @@ describe('Sequelize', () => {
   });
 
   describe('getTableName()', () => {
-    test('should get nameProcessing for tables', async () => {
-      expect(database.getTableName('ADDRESSES').nameProcessing).toBe(`${originalTablePrefix}test_sequelize_temp_addresses`);
-      expect(database.getTableName('ZIPCODES').nameProcessing).toBe(`${originalTablePrefix}test_sequelize_temp_postalcodes`);
-      expect(database.getTableName('ZIPCODE_CHANGES').nameProcessing).toBe(`${originalTablePrefix}test_sequelize_postalcode_changes`);
+    test('should get names for tables', async () => {
+      expect(database.getTableName('ADDRESSES').nameProcessing)
+        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.table.addresses.name}`);
+      expect(database.getTableName('ADDRESSES').nameFinished)
+        .toBe(`${originalTablePrefix}test_sequelize_${global.config.table.addresses.name}`);
+      expect(database.getTableName('ZIPCODES').nameProcessing)
+        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.table.postalcodes.name}`);
+      expect(database.getTableName('ZIPCODES').nameFinished)
+        .toBe(`${originalTablePrefix}test_sequelize_${global.config.table.postalcodes.name}`);
+      expect(database.getTableName('ZIPCODE_CHANGES').nameProcessing)
+        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.table.postalcode_changes.name}`);
+      expect(database.getTableName('ZIPCODE_CHANGES').nameFinished)
+        .toBe(`${originalTablePrefix}test_sequelize_${global.config.table.postalcode_changes.name}`);
     });
   });
 
@@ -109,28 +118,30 @@ describe('Sequelize', () => {
   describe('tableExists()', () => {
     test('should not have tables', async () => {
       expect(await database.tableExists(database.getTableName('ADDRESSES').nameProcessing)).toBe(false);
+      expect(await database.tableExists(database.getTableName('ADDRESSES').nameFinished)).toBe(false);
       expect(await database.tableExists(database.getTableName('ZIPCODES').nameProcessing)).toBe(false);
+      expect(await database.tableExists(database.getTableName('ZIPCODES').nameFinished)).toBe(false);
       expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').nameProcessing)).toBe(false);
+      expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').nameFinished)).toBe(false);
     });
   });
 
   describe('createTempTables()', () => {
     test('should create temp tables', async () => {
       await database.createTempTables(['ADDRESSES', 'ZIPCODES']);
-      expect(await database.tableExists(database.getTableName('ADDRESSES').nameProcessing)).toBe(true);
-      expect(await database.tableExists(database.getTableName('ZIPCODES').nameProcessing)).toBe(true);
-      expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').nameProcessing)).toBe(false);
+      expect(await database.tableExists(database.getTableName('ADDRESSES').name)).toBe(true);
+      expect(await database.tableExists(database.getTableName('ZIPCODES').name)).toBe(true);
+      expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').name)).toBe(false);
       await database.createTempTables(['ADDRESSES', 'ZIPCODES', 'ZIPCODE_CHANGES']);
-      expect(await database.tableExists(database.getTableName('ADDRESSES').nameProcessing)).toBe(true);
-      expect(await database.tableExists(database.getTableName('ZIPCODES').nameProcessing)).toBe(true);
-      expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').nameProcessing)).toBe(true);
-      await database.createTempTables(['ADDRESSES', 'ZIPCODES', 'ZIPCODE_CHANGES']);
+      expect(await database.tableExists(database.getTableName('ADDRESSES').name)).toBe(true);
+      expect(await database.tableExists(database.getTableName('ZIPCODES').name)).toBe(true);
+      expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').name)).toBe(true);
     });
   });
 
   describe('renameTable()', () => {
     test('should rename table', async () => {
-      const oldName = database.getTableName('ADDRESSES').nameProcessing;
+      const oldName = database.getTableName('ADDRESSES').name;
       const newName = `${oldName}_new`;
       expect(await database.tableExists(newName)).toBe(false);
       expect(await database.renameTable(oldName, newName)).toBe(true);
@@ -141,18 +152,20 @@ describe('Sequelize', () => {
 
   describe('dropTable()', () => {
     test('should drop test tables', async () => {
-      const tableName = `${database.getTableName('ADDRESSES').nameProcessing}_new`;
+      const tableName = `${database.getTableName('ADDRESSES').name}_new`;
       expect(await database.tableExists(tableName)).toBe(true);
-      expect(await database.tableExists(database.getTableName('ZIPCODES').nameProcessing)).toBe(true);
-      expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').nameProcessing)).toBe(true);
       expect(await database.dropTable(tableName)).toBe(true);
-      expect(await database.dropTable(database.getTableName('ZIPCODES').nameProcessing)).toBe(true);
-      expect(await database.dropTable(database.getTableName('ZIPCODE_CHANGES').nameProcessing)).toBe(true);
+      await database.dropTable(database.getTableName('ZIPCODES').nameProcessing);
+      await database.dropTable(database.getTableName('ZIPCODES').nameFinished);
+      await database.dropTable(database.getTableName('ZIPCODE_CHANGES').nameProcessing);
+      await database.dropTable(database.getTableName('ZIPCODE_CHANGES').nameFinished);
       expect(await database.tableExists(tableName)).toBe(false);
       expect(await database.tableExists(database.getTableName('ADDRESSES').nameProcessing)).toBe(false);
+      expect(await database.tableExists(database.getTableName('ADDRESSES').nameFinished)).toBe(false);
       expect(await database.tableExists(database.getTableName('ZIPCODES').nameProcessing)).toBe(false);
+      expect(await database.tableExists(database.getTableName('ZIPCODES').nameFinished)).toBe(false);
       expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').nameProcessing)).toBe(false);
-      expect(await database.dropTable(database.getTableName('ZIPCODE_CHANGES').nameProcessing)).toBe(null);
+      expect(await database.tableExists(database.getTableName('ZIPCODE_CHANGES').nameFinished)).toBe(false);
     });
   });
 });

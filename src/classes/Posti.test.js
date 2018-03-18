@@ -127,6 +127,7 @@ describe('Posti', () => {
       await posti.setNewFiles([file]);
       global.config.process.deleteOnComplete = true;
       await posti.processFiles(files);
+      expect(fs.existsSync(tempDir)).toBe(false);
     });
 
     test('should process all files and not to clean after', async () => {
@@ -138,30 +139,11 @@ describe('Posti', () => {
       await posti.setNewFiles([file]);
       global.config.process.deleteOnComplete = false;
       await posti.processFiles(files);
+      expect(fs.existsSync(tempDir)).toBe(true);
     });
   });
 
   describe('processFile()', async () => {
-    test('should process ZIPCODES file', async () => {
-      await posti.createCacheDir();
-      await global.database.createTempTables(['ZIPCODES']);
-
-      const file = files.find(f => f.model === 'ZIPCODES');
-
-      global.config.process.deleteOnComplete = false;
-      await posti.processFile(file);
-    });
-
-    test('should skip processing ZIPCODES file', async () => {
-      await posti.createCacheDir();
-      await global.database.createTempTables(['ZIPCODES']);
-
-      const file = files.find(f => f.model === 'ZIPCODES');
-
-      await posti.setLatest();
-      await posti.processFile(file);
-    });
-
     test('should process ZIPCODE_CHANGES file', async () => {
       await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODE_CHANGES']);
@@ -171,6 +153,8 @@ describe('Posti', () => {
       await posti.setNewFiles([file]);
       global.config.process.deleteOnComplete = false;
       await posti.processFile(file);
+      expect(fs.existsSync(tempDir)).toBe(true);
+      expect(fs.readdirSync(tempDir)).toContain(file.filename);
     });
 
     test('should skip processing ZIPCODE_CHANGES file', async () => {
@@ -180,14 +164,14 @@ describe('Posti', () => {
       const file = files.find(f => f.model === 'ZIPCODE_CHANGES');
 
       await posti.setLatest();
-      await posti.processFile(file);
+      expect(await posti.processFile(file)).toBe(undefined);
     });
   });
 
   describe('parseFile()', () => {
     test('should not parse random file', async () => {
       posti.setFile(randomFile);
-      await posti.parseFile();
+      expect(await posti.parseFile()).toBe(undefined);
     });
   });
 
@@ -206,7 +190,7 @@ describe('Posti', () => {
 
     test('should not clean up random file', async () => {
       posti.setFile(randomFile);
-      await posti.clean();
+      expect(await posti.clean()).toBe(undefined);
     });
   });
 

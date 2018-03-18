@@ -23,9 +23,9 @@ class Database {
 
     this.tables = {
       ADDRESSES: {
-        nameProcessing: `${global.config.tablePrefix}temp_addresses`,
-        nameFinished: `${global.config.tablePrefix}addresses`,
-        deleteOnceComplete: true,
+        nameProcessing: `${global.config.tablePrefix}temp_${global.config.table.addresses.name}`,
+        nameFinished: `${global.config.tablePrefix}${global.config.table.addresses.name}`,
+        deleteOnceComplete: global.config.table.addresses.useTempTable,
         fields: {
           id: {
             type: 'integer',
@@ -242,9 +242,9 @@ class Database {
       },
 
       ZIPCODES: {
-        nameProcessing: `${global.config.tablePrefix}temp_postalcodes`,
-        nameFinished: `${global.config.tablePrefix}postalcodes`,
-        deleteOnceComplete: true,
+        nameProcessing: `${global.config.tablePrefix}temp_${global.config.table.postalcodes.name}`,
+        nameFinished: `${global.config.tablePrefix}${global.config.table.postalcodes.name}`,
+        deleteOnceComplete: global.config.table.postalcodes.useTempTable,
         fields: {
           id: {
             type: 'integer',
@@ -312,7 +312,7 @@ class Database {
             dbType: Sequelize.STRING(12),
             index: true,
           },
-          effectiveAt: {
+          entryIntoForceAt: {
             comment: 'Date of entry into force',
             start: 103,
             length: 8,
@@ -390,8 +390,9 @@ class Database {
       },
 
       ZIPCODE_CHANGES: {
-        nameProcessing: `${global.config.tablePrefix}postalcode_changes`,
-        deleteOnceComplete: false,
+        nameProcessing: `${global.config.tablePrefix}temp_${global.config.table.postalcode_changes.name}`,
+        nameFinished: `${global.config.tablePrefix}${global.config.table.postalcode_changes.name}`,
+        deleteOnceComplete: global.config.table.postalcode_changes.useTempTable,
         fields: {
           id: {
             type: 'integer',
@@ -622,9 +623,14 @@ class Database {
    *
    * @returns {Object} Table name.
    */
-  getTableName = tableKey => (
-    this.tables[tableKey]
-  )
+  getTableName = (tableKey) => {
+    const tableConfigs = this.tables[tableKey];
+    return {
+      name: tableConfigs.deleteOnceComplete ? tableConfigs.nameProcessing : tableConfigs.nameFinished,
+      nameProcessing: tableConfigs.nameProcessing,
+      nameFinished: tableConfigs.nameFinished,
+    };
+  }
 
   /**
    * Get table definitions.
@@ -702,7 +708,7 @@ class Database {
    */
   defineTable = async (tableKey) => {
     this.models[tableKey] = this.database.define(
-      this.getTableName(tableKey).nameProcessing,
+      this.getTableName(tableKey).name,
       this.getTableDefinitions(tableKey),
       this.getTableDatabaseOptions(tableKey)
     );
@@ -780,18 +786,18 @@ class Database {
           const tableConfigs = this.getTableConfigs(tableKey);
           await this.defineTable(tableKey);
 
-          if (tableConfigs.nameFinished) {
+          if (tableConfigs.deleteOnceComplete) {
             if (!await this.tableExists(tableConfigs.nameProcessing)) {
               logStep(`Creating temp table: ${tableConfigs.nameProcessing}`);
               await this.getTableModel(tableKey).sync();
             } else {
               logStep(`Temp table '${tableConfigs.nameProcessing}' already exists`);
             }
-          } else if (!await this.tableExists(tableConfigs.nameProcessing)) {
-            logStep(`Creating table for: ${tableConfigs.nameProcessing}`);
+          } else if (!await this.tableExists(tableConfigs.nameFinished)) {
+            logStep(`Creating table for: ${tableConfigs.nameFinished}`);
             await this.getTableModel(tableKey).sync();
           } else {
-            logStep(`Table '${tableConfigs.nameProcessing}' already exists`);
+            logStep(`Table '${tableConfigs.nameFinished}' already exists`);
           }
         },
         { concurrency: 10 }
