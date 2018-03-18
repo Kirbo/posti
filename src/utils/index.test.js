@@ -1,5 +1,4 @@
 import fs from 'fs-extra';
-import _colors from 'colors';
 import path from 'path';
 import os from 'os';
 import 'jest-plugin-console-matchers/setup';
@@ -16,34 +15,38 @@ import {
 } from './index';
 
 describe('utils', () => {
-  describe('logBlock("It worked")', () => {
-    test('should console.info "*** It Worked"', () => {
-      expect(() => logBlock('It worked')).toConsoleInfo(`${_colors.green('***')} It worked`);
+  describe('logBlock()', () => {
+    test('should console.info()', () => {
+      expect(() => logBlock('It worked')).toConsoleInfo();
     });
   });
 
-  describe('logStep("It worked")', () => {
-    test('should console.info "  * It Worked"', () => {
-      expect(() => logStep('It worked')).toConsoleInfo(`${_colors.yellow('    *')} It worked`);
+  describe('logStep()', () => {
+    test('should console.info()', () => {
+      expect(() => logStep('It worked')).toConsoleInfo();
     });
   });
 
-  describe('logError("It worked")', () => {
+  describe('logError()', () => {
     test('should throw error', () => {
       expect(() => { logError('It worked'); }).toThrow(new Error('It worked'));
     });
   });
 
-  describe('logFinished("It worked")', () => {
-    test('should not return anything', () => {
-      expect(() => logFinished('It worked')).toConsoleInfo(`-----\n🍺 ${_colors.green('It worked')}\n`);
+  describe('logFinished()', () => {
+    test('should console.info()', () => {
+      expect(() => logFinished('It worked')).toConsoleInfo();
     });
   });
 
   describe('sliceArrayIntoChunks()', () => {
-    test('should slice array into smaller chunks', () => {
+    test('should slice array into 2 chunks', () => {
       expect(sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 5)).toHaveLength(2);
+    });
+    test('should slice array into 4 chunks', () => {
       expect(sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 3)).toHaveLength(4);
+    });
+    test('should slice array into 5 chunks', () => {
       expect(sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 2)).toHaveLength(5);
     });
   });
@@ -188,13 +191,25 @@ describe('utils', () => {
   });
 
   describe('millisecondsToTime()', () => {
-    test('should return correcly', () => {
+    test('should return 00:00:00.001', () => {
       expect(millisecondsToTime(1)).toBe('00:00:00.001');
+    });
+    test('should return 00:00:00.010', () => {
       expect(millisecondsToTime(10)).toBe('00:00:00.010');
+    });
+    test('should return 00:00:00.100', () => {
       expect(millisecondsToTime(100)).toBe('00:00:00.100');
+    });
+    test('should return 00:00:01.000', () => {
       expect(millisecondsToTime(1000)).toBe('00:00:01.000');
+    });
+    test('should return 00:01:00.000', () => {
       expect(millisecondsToTime(60000)).toBe('00:01:00.000');
+    });
+    test('should return 01:00:00.000', () => {
       expect(millisecondsToTime(3600000)).toBe('01:00:00.000');
+    });
+    test('should return 12:34:56.789', () => {
       expect(millisecondsToTime(45296789)).toBe('12:34:56.789');
     });
   });

@@ -12,4 +12,19 @@ module.exports.default = {
     concurrency: 5, // Number of concurrent inserts.
     deleteOnComplete: true, // Should the temporary data directory be removed after script finishes.
   },
+
+  table: {
+    addresses: {
+      name: 'addresses',
+      useTempTable: true,
+    },
+    postalcodes: {
+      name: 'postalcodes',
+      useTempTable: true,
+    },
+    postalcode_changes: {
+      name: 'postalcode_changes',
+      useTempTable: false,
+    },
+  },
 };
