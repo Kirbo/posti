@@ -1,11 +1,13 @@
 # POSTI
 
-![pipeline status](https://posti.devaus.eu/pipeline.svg)
-![coverage report](https://posti.devaus.eu/coverage.svg)
-![latest version](https://img.shields.io/github/package-json/v/kirbo/posti.svg)
-![last commit](https://img.shields.io/github/last-commit/kirbo/posti.svg)
-![total downloads](https://img.shields.io/npm/dt/posti.svg)
-![dependencies](https://img.shields.io/librariesio/github/kirbo/posti.svg)
+<p align="center">
+  <img src="https://posti.devaus.eu/pipeline.svg" alt="pipeline status"/>
+  <img src="https://posti.devaus.eu/coverage.svg" alt="coverage report"/>
+  <img src="https://img.shields.io/github/package-json/v/kirbo/posti.svg" alt="latest version"/>
+  <img src="https://img.shields.io/github/last-commit/kirbo/posti.svg" alt="last commit"/>
+  <img src="https://img.shields.io/npm/dt/posti.svg" alt="total downloads"/>
+  <img src="https://img.shields.io/librariesio/github/kirbo/posti.svg" alt="dependencies"/>
+</p>
 
 ## Description
 
