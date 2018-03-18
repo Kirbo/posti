@@ -17,18 +17,24 @@ describe('Sequelize', () => {
     jest.setTimeout(10 * 60 * 1000);
   });
 
-  test('should not be connected', async () => {
-    expect(await database.isConnected()).toBe(false);
+  describe('isConnected()', () => {
+    test('should not be connected', async () => {
+      expect(await database.isConnected()).toBe(false);
+    });
   });
 
-  test('should connect', async () => {
-    await database.connect();
-    expect(await database.isConnected()).toBe(true);
+  describe('connect()', () => {
+    test('should connect', async () => {
+      await database.connect();
+      expect(await database.isConnected()).toBe(true);
+    });
   });
 
-  test('should already be connected', async () => {
-    await database.connect();
-    expect(await database.isConnected()).toBe(true);
+  describe('isConnected()', () => {
+    test('should be connected', async () => {
+      await database.connect();
+      expect(await database.isConnected()).toBe(true);
+    });
   });
 
   describe('getTableName()', () => {
@@ -96,11 +102,19 @@ describe('Sequelize', () => {
     });
   });
 
-  test('should cast correctly', async () => {
-    expect(database.castProperties({ type: 'number' }, '5')).toBe(5);
-    expect(database.castProperties({ type: 'YYYYMMDD' }, '20180101')).toBe('2018-01-01');
-    expect(database.castProperties({ type: 'test' }, '')).toBe(null);
-    expect(database.castProperties({ type: 'other' }, 'hurrdurr')).toBe('hurrdurr');
+  describe('castProperties()', () => {
+    test('should cast integer', async () => {
+      expect(database.castProperties('integer', '5')).toBe(5);
+    });
+    test('should cast YYYYMMDD', async () => {
+      expect(database.castProperties('YYYYMMDD', '20180101')).toBe('2018-01-01');
+    });
+    test('should cast null', async () => {
+      expect(database.castProperties('test', '')).toBe(null);
+    });
+    test('should not cast string', async () => {
+      expect(database.castProperties('other', 'hurrdurr')).toBe('hurrdurr');
+    });
   });
 
   describe('defineTable()', () => {

@@ -279,7 +279,7 @@ class Posti {
             row[key] = null;
             if (column.start) {
               const value = line.substr((column.start - 1), column.length).trim();
-              row[key] = global.database.castProperties(column, value);
+              row[key] = global.database.castProperties(column.type, value);
             }
           });
 

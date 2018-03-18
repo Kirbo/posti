@@ -860,19 +860,19 @@ class Database {
   /**
    * Cast values for database.
    *
-   * @param {Object} column - Column name.
+   * @param {String} type - Column name.
    * @param {String} value - Value.
    *
    * @returns {any} Processed value.
    */
-  castProperties = (column, value) => {
+  castProperties = (type, value) => {
     if (value === '') {
       return null;
     }
 
-    switch (column.type) {
-      case 'number': {
-        return Number(value);
+    switch (type) {
+      case 'integer': {
+        return parseInt(value, 10);
       }
       case 'YYYYMMDD': {
         const matches = value.match(/(\d{4})(\d{2})(\d{2})/);
