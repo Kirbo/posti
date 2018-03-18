@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.2.2] - 2018-03-19
+
+### Changed
+- Improved tests.
+
+### Fixed
+- Casting for `integer` type fields, was incorrectly `number` [src/classes/Sequelize.js](./src/classes/Sequelize.js) on line #874.
+
+
 ## [0.2.1] - 2018-03-18
 
 ### Added
