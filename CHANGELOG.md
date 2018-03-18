@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
-## [0.1.6] - 2018-03-xx
+## [0.1.6] - 2018-03-18
 
 ### Added
 - Couple of badges more into [README.md](./README.md).
+- Lots of more tests (now everything is 100% 🎉🎊🥂).
 
 
 ## [0.1.5] - 2018-03-17

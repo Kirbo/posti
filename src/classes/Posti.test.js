@@ -5,6 +5,7 @@ import os from 'os';
 import fs from 'fs-extra';
 
 import {
+  logError,
   findDatabaseConfig,
 } from '../utils';
 
@@ -26,6 +27,13 @@ const latestFile = path.resolve(`${cacheDir}/${latest}`);
 const tempDir = path.resolve(`${cacheDir}/data`);
 
 global.postiConfig.cache.latestFile = latestFile;
+
+const randomFile = {
+  url: 'https://google.com',
+  filename: 'index.html',
+  extensionless: 'index',
+  model: undefined,
+};
 
 let files;
 
@@ -83,10 +91,46 @@ describe('Posti', () => {
     });
   });
 
-  describe('processFiles()', () => {
-    test('should process all files', async () => {
-      await posti.createCacheDir();
+  describe('writeLatest()', () => {
+    test('should write latest files', async () => {
+      expect(await posti.writeLatest(files.filter(f => f.model !== 'ZIPCODES').map(file => file.filename))).toBe(undefined);
+    });
+  });
 
+  describe('getNewFiles()', () => {
+    test('should get new files', async () => {
+      const newFiles = await posti.getNewFiles();
+      expect(newFiles.length).toBe(1);
+    });
+    test('should force get process all files', async () => {
+      const mockProcess = {
+        env: {
+          PWD: process.env.PWD,
+          force: true,
+        },
+        argv: [],
+        exit: code => logError(code),
+      };
+
+      const newFiles = await posti.getNewFiles(mockProcess);
+      expect(newFiles.length).toEqual(3);
+    });
+  });
+
+  describe('processFiles()', () => {
+    test('should process all files and clean after', async () => {
+      await posti.createCacheDir();
+      await global.database.createTempTables(['ZIPCODES']);
+
+      const file = files.find(f => f.model === 'ZIPCODES');
+
+      await posti.setNewFiles([file]);
+      global.config.process.deleteOnComplete = true;
+      await posti.processFiles(files);
+    });
+
+    test('should process all files and not to clean after', async () => {
+      await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODES']);
 
       const file = files.find(f => f.model === 'ZIPCODES');
@@ -99,14 +143,17 @@ describe('Posti', () => {
 
   describe('processFile()', async () => {
     test('should process ZIPCODES file', async () => {
+      await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODES']);
 
       const file = files.find(f => f.model === 'ZIPCODES');
 
+      global.config.process.deleteOnComplete = false;
       await posti.processFile(file);
     });
 
     test('should skip processing ZIPCODES file', async () => {
+      await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODES']);
 
       const file = files.find(f => f.model === 'ZIPCODES');
@@ -114,18 +161,52 @@ describe('Posti', () => {
       await posti.setLatest();
       await posti.processFile(file);
     });
+
+    test('should process ZIPCODE_CHANGES file', async () => {
+      await posti.createCacheDir();
+      await global.database.createTempTables(['ZIPCODE_CHANGES']);
+
+      const file = files.find(f => f.model === 'ZIPCODE_CHANGES');
+
+      await posti.setNewFiles([file]);
+      global.config.process.deleteOnComplete = false;
+      await posti.processFile(file);
+    });
+
+    test('should skip processing ZIPCODE_CHANGES file', async () => {
+      await posti.createCacheDir();
+      await global.database.createTempTables(['ZIPCODE_CHANGES']);
+
+      const file = files.find(f => f.model === 'ZIPCODE_CHANGES');
+
+      await posti.setLatest();
+      await posti.processFile(file);
+    });
+  });
+
+  describe('parseFile()', () => {
+    test('should not parse random file', async () => {
+      posti.setFile(randomFile);
+      await posti.parseFile();
+    });
   });
 
   describe('clean()', () => {
     test('should clean up', async () => {
       const file = files.find(f => f.model === 'ZIPCODES');
 
-      await posti.clean(file);
+      posti.setFile(file);
+      await posti.clean();
 
       const tableConfigs = global.database.getTableConfigs(file.model);
       const oldTable = await global.database.dropTable(`${tableConfigs.nameFinished}_old`);
 
       expect(await global.database.tableExists(oldTable)).toBe(false);
+    });
+
+    test('should not clean up random file', async () => {
+      posti.setFile(randomFile);
+      await posti.clean();
     });
   });
 
