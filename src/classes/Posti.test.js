@@ -58,7 +58,9 @@ describe('Posti', () => {
 
   describe('writeLatest()', () => {
     test('should write latest files', async () => {
-      expect(await posti.writeLatest('test,testing,it works')).toBe(undefined);
+      await posti.writeLatest('test,testing,it works');
+      const contents = await posti.getLatest();
+      expect(contents).toBe('test,testing,it works');
     });
   });
 
@@ -88,12 +90,8 @@ describe('Posti', () => {
       expect(files[0].model).toBe('ADDRESSES');
       expect(files[1].model).toBe('ZIPCODES');
       expect(files[2].model).toBe('ZIPCODE_CHANGES');
-    });
-  });
 
-  describe('writeLatest()', () => {
-    test('should write latest files', async () => {
-      expect(await posti.writeLatest(files.filter(f => f.model !== 'ZIPCODES').map(file => file.filename))).toBe(undefined);
+      await posti.writeLatest(files.filter(f => f.model !== 'ZIPCODES').map(file => file.filename));
     });
   });
 

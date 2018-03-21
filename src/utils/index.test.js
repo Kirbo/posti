@@ -52,141 +52,138 @@ describe('utils', () => {
   });
 
   describe('findDatabaseConfig()', () => {
-    test('should not find any configs', () => {
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-        },
-        argv: [...process.argv],
-        exit: () => undefined,
-      };
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
+    describe('no config defined', () => {
+      test('should not find any configs', () => {
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+          },
+          argv: [],
+          exit: () => undefined,
+        };
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
+      });
+
+      test('should find config from project', () => {
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+          },
+          argv: [...process.argv],
+          exit: () => undefined,
+        };
+        const testConfigFile = path.resolve(mockProcess.env.PWD, 'test_posti.config.js');
+        fs.writeFileSync(testConfigFile, 'test', 'utf8');
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
+        fs.removeSync(testConfigFile);
+      });
+
+      test('should find config from os.homedir()', () => {
+        const homePath = path.resolve(os.homedir());
+        const homeConfig = path.resolve(homePath, '.posti/config.js');
+        expect(findDatabaseConfig()).toBe(homeConfig);
+      });
     });
 
-    test('should find NODE_ENV config', () => {
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-          NODE_ENV: 'example',
-        },
-        argv: [...process.argv],
-        exit: () => {},
-      };
-      const testConfigFile = path.resolve(mockProcess.env.PWD, `test_posti.config.${mockProcess.env.NODE_ENV}.js`);
-      fs.writeFileSync(testConfigFile, 'test', 'utf8');
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
-      fs.removeSync(testConfigFile);
+    describe('NODE_ENV', () => {
+      test('should not find config', () => {
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+            NODE_ENV: 'not_working',
+          },
+          argv: [...process.argv],
+          exit: () => undefined,
+        };
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
+      });
+
+      test('should find config', () => {
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+            NODE_ENV: 'example',
+          },
+          argv: [...process.argv],
+          exit: () => {},
+        };
+        const testConfigFile = path.resolve(mockProcess.env.PWD, `test_posti.config.${mockProcess.env.NODE_ENV}.js`);
+        fs.writeFileSync(testConfigFile, 'test', 'utf8');
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
+        fs.removeSync(testConfigFile);
+      });
     });
 
-    test('should not find NODE_ENV config', () => {
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-          NODE_ENV: 'not_working',
-        },
-        argv: [...process.argv],
-        exit: () => undefined,
-      };
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
+    describe('ENV', () => {
+      test('should not find config', () => {
+        const config = '~/.posti/test_config_not_found.js';
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+            config,
+          },
+          argv: [...process.argv],
+          exit: () => undefined,
+        };
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
+      });
+
+      test('should find config', () => {
+        const config = '~/.posti/test_config.js';
+        const homePath = path.resolve(os.homedir());
+        const homeConfig = path.resolve(homePath, '.posti/test_config.js');
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+            config,
+          },
+          argv: [...process.argv],
+          exit: () => undefined,
+        };
+        const testConfigFile = homeConfig;
+        fs.writeFileSync(testConfigFile, 'test', 'utf8');
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
+        fs.removeSync(testConfigFile);
+      });
     });
 
-    test('should not find config from argv', () => {
-      const config = '~/.posti/test_config.js';
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-        },
-        argv: [
-          process.argv[0],
-          process.argv[1],
-          `--testing=${config}`,
-        ],
-        exit: () => undefined,
-      };
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
-    });
+    describe('ARGV', () => {
+      test('should not find config', () => {
+        const config = '~/.posti/test_config.js';
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+          },
+          argv: [
+            process.argv[0],
+            process.argv[1],
+            `--testing=${config}`,
+          ],
+          exit: () => undefined,
+        };
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
+      });
 
-    test('should find config from argv', () => {
-      const config = '~/.posti/test_config.js';
-      const homePath = path.resolve(os.homedir());
-      const homeConfig = path.resolve(homePath, '.posti/test_config.js');
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-        },
-        argv: [
-          process.argv[0],
-          process.argv[1],
-          `--config=${config}`,
-        ],
-        exit: () => undefined,
-      };
-      const testConfigFile = homeConfig;
-      fs.writeFileSync(testConfigFile, 'test', 'utf8');
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
-      fs.removeSync(testConfigFile);
-    });
-
-    test('should find config from project', () => {
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-        },
-        argv: [...process.argv],
-        exit: () => undefined,
-      };
-      const testConfigFile = path.resolve(mockProcess.env.PWD, 'test_posti.config.js');
-      fs.writeFileSync(testConfigFile, 'test', 'utf8');
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
-      fs.removeSync(testConfigFile);
-    });
-
-    test('should find config from env', () => {
-      const config = '~/.posti/test_config.js';
-      const homePath = path.resolve(os.homedir());
-      const homeConfig = path.resolve(homePath, '.posti/test_config.js');
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-          config,
-        },
-        argv: [...process.argv],
-        exit: () => undefined,
-      };
-      const testConfigFile = homeConfig;
-      fs.writeFileSync(testConfigFile, 'test', 'utf8');
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
-      fs.removeSync(testConfigFile);
-    });
-
-    test('should not find config from env', () => {
-      const config = '~/.posti/test_config_not_found.js';
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-          config,
-        },
-        argv: [...process.argv],
-        exit: () => undefined,
-      };
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
-    });
-
-    test('should not find any configs', () => {
-      const mockProcess = {
-        env: {
-          PWD: process.env.PWD,
-        },
-        argv: [],
-        exit: () => undefined,
-      };
-      expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
-    });
-
-    test('should find global config from os.homedir()', () => {
-      const homePath = path.resolve(os.homedir());
-      const homeConfig = path.resolve(homePath, '.posti/config.js');
-      expect(findDatabaseConfig()).toBe(homeConfig);
+      test('should find config', () => {
+        const config = '~/.posti/test_config.js';
+        const homePath = path.resolve(os.homedir());
+        const homeConfig = path.resolve(homePath, '.posti/test_config.js');
+        const mockProcess = {
+          env: {
+            PWD: process.env.PWD,
+          },
+          argv: [
+            process.argv[0],
+            process.argv[1],
+            `--config=${config}`,
+          ],
+          exit: () => undefined,
+        };
+        const testConfigFile = homeConfig;
+        fs.writeFileSync(testConfigFile, 'test', 'utf8');
+        expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
+        fs.removeSync(testConfigFile);
+      });
     });
   });
 
