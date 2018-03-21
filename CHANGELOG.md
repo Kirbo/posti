@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.2.4] - 2018-03-xx
+
+### Changed
+- Optimised CI/CD pipeline.
+
+
 ## [0.2.3] - 2018-03-21
 
 ### Changed
