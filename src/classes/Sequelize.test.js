@@ -38,7 +38,7 @@ describe('Sequelize', () => {
   });
 
   describe('getTableName()', () => {
-    test('should get names for tables', async () => {
+    test('should get table names', async () => {
       expect(database.getTableName('ADDRESSES').nameProcessing)
         .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.table.addresses.name}`);
       expect(database.getTableName('ADDRESSES').nameFinished)
@@ -55,7 +55,7 @@ describe('Sequelize', () => {
   });
 
   describe('getTableDefinitions()', () => {
-    test('should get definitions for tables', async () => {
+    test('should get table definitions', async () => {
       expect(typeof database.getTableDefinitions('ADDRESSES')).toBe('object');
       expect(typeof database.getTableDefinitions('ZIPCODES')).toBe('object');
       expect(typeof database.getTableDefinitions('ZIPCODE_CHANGES')).toBe('object');
@@ -63,7 +63,7 @@ describe('Sequelize', () => {
   });
 
   describe('getFileModelName()', () => {
-    test('should get model name for tables', async () => {
+    test('should get table model name', async () => {
       expect(database.getFileModelName('BAF')).toBe('ADDRESSES');
       expect(database.getFileModelName('PCF')).toBe('ZIPCODES');
       expect(database.getFileModelName('POM')).toBe('ZIPCODE_CHANGES');
@@ -71,7 +71,7 @@ describe('Sequelize', () => {
   });
 
   describe('getTableIndexes()', () => {
-    test('should get indexes for tables', async () => {
+    test('should get table indexes', async () => {
       expect(typeof database.getTableIndexes('ADDRESSES')).toBe('object');
       expect(typeof database.getTableIndexes('ZIPCODES')).toBe('object');
       expect(typeof database.getTableIndexes('ZIPCODE_CHANGES')).toBe('object');
@@ -79,7 +79,7 @@ describe('Sequelize', () => {
   });
 
   describe('getTableDatabaseOptions()', () => {
-    test('should get options for table definitions', async () => {
+    test('should get table options', async () => {
       expect(typeof database.getTableDatabaseOptions('ADDRESSES')).toBe('object');
       expect(typeof database.getTableDatabaseOptions('ZIPCODES')).toBe('object');
       expect(typeof database.getTableDatabaseOptions('ZIPCODE_CHANGES')).toBe('object');
