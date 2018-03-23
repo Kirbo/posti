@@ -11,18 +11,15 @@ import {
 } from './utils';
 
 import Sequelize from './classes/Sequelize';
-import postiConfig from './config';
 
 const started = new Date();
 
 const configPath = findDatabaseConfig();
 global.config = require(configPath).default;
-global.postiConfig = postiConfig;
 
 (async () => {
   try {
-    logBlock(`Using config from: ${configPath}`);
-    logBlock('Creating GraphlQL schemas:');
+    logBlock('Creating GraphQL schemas:');
 
     const database = new Sequelize();
     [
