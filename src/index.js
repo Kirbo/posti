@@ -1,5 +1,12 @@
-import schema from './graphql';
+
+import { findDatabaseConfig } from './utils';
+import postiConfig from './config';
+
+const configPath = findDatabaseConfig();
+const config = require(configPath).default;
 
 export {
-  schema,
+  postiConfig,
+  configPath,
+  config,
 };

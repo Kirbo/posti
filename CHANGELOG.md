@@ -14,9 +14,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Renamed `table` into `tables` on line 19.
   - Added new configs: `server`.
 
-### Added
-- GraphQL
-
 ### Changed
 - Optimised CI/CD pipeline.
 
