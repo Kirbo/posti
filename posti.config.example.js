@@ -42,5 +42,17 @@ module.exports.default = {
     cacheControl: false,
     // To disable GraphiQL and Playground, change this to true.
     production: false,
+
+    // https://www.npmjs.com/package/express-rate-limit#configuration
+    limiter: {
+      // 5 minutes
+      windowMs: 5 * 60 * 1000,
+      // limit each IP to 250 requests per windowMs
+      max: 250,
+      // delay after n requests.
+      delayAfter: 5,
+      // disable delaying - full speed until the max limit is reached
+      delayMs: 100,
+    },
   },
 };

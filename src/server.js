@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import compression from 'compression';
 import { makeExecutableSchema } from 'graphql-tools';
 import expressPlayground from 'graphql-playground-middleware-express';
+import RateLimit from 'express-rate-limit';
 
 import { findDatabaseConfig } from './utils';
 import postiConfig from './config';
@@ -24,6 +25,13 @@ const serverConfig = {
   tracing: true,
   cacheControl: true,
   production: false,
+  // corsOrigin: '*',
+  limiter: {
+    windowMs: 24 * 60 * 60 * 1000,
+    delayAfter: 1,
+    delayMs: 1000,
+    max: 10,
+  },
   ...global.config.server,
 };
 
@@ -34,8 +42,29 @@ const schema = makeExecutableSchema({
   resolvers,
 });
 
+/**
+ * Enable CORS.
+ *
+ * @param {Object} req - Request.
+ * @param {Object} res - Response.
+ * @param {Function} next - Callback to next rule
+ *
+ * @returns {void}
+ */
+// const allowCrossDomain = (req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', serverConfig.corsOrigin);
+//   res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+//   next();
+// };
+// app.use(allowCrossDomain);
+
 app.use(compression());
-app.use('/graphql', bodyParser.json(), graphqlExpress({
+
+app.enable('trust proxy');
+
+const limiter = new RateLimit(serverConfig.limiter);
+
+app.use('/graphql', limiter, bodyParser.json(), graphqlExpress({
   schema,
   tracing: serverConfig.tracing,
   cacheControl: serverConfig.cacheControl,
