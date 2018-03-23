@@ -1,5 +1,3 @@
-import fs from 'fs-extra';
-import path from 'path';
 import Promise from 'bluebird';
 import Sequelize from 'sequelize';
 
@@ -811,42 +809,6 @@ class Database {
   )
 
   /**
-   * Create GraphQL schema.
-   *
-   * @param {String} tableKey - Table key.
-   *
-   * @returns {void}
-   */
-  createTableSchema = async (tableKey) => {
-    const tableConfig = this.getTableConfigs(tableKey);
-    const typesDir = path.resolve(`${__dirname}/../graphql/Types`);
-    if (!fs.existsSync(typesDir)) {
-      logStep(`Creating folder for types: ${typesDir}`);
-      fs.ensureDirSync(typesDir);
-    }
-    const filePath = `${typesDir}/${tableConfig.graphqlQuery}.js`;
-    const file = path.resolve(filePath);
-
-    logStep(tableKey);
-
-    let contents = '/* This file is auto-generated, any changes will be overwritten ! */\n\n';
-    contents += `const typeDefinition = \`\ntype ${tableConfig.graphqlQuery} {`;
-
-    Object.keys(tableConfig.fields).forEach((field) => {
-      if (tableConfig.fields[field].extraComment) {
-        contents += `\n  ### ${field} comments:\n`;
-        contents += `  # - ${tableConfig.fields[field].extraComment.replace(/\n/g, '\n  # - ')}\n`;
-        contents += '  ###';
-      }
-      contents += `\n  ${field}: ${this.castGraphQLType(tableConfig.fields[field].type)}`;
-    });
-    contents += '\n}\n`;\n';
-    contents += '\nexport default typeDefinition;\n';
-
-    fs.writeFileSync(file, contents, 'utf8');
-  }
-
-  /**
    * Does table exist.
    *
    * @param {String} table - Table name.
@@ -921,28 +883,6 @@ class Database {
       }
       default: {
         return value;
-      }
-    }
-  }
-
-
-  /**
-   * Cast GraphQL type.
-   *
-   * @param {String} type - Original type.
-   *
-   * @returns {String} GraphQL type.
-   */
-  castGraphQLType = (type) => {
-    switch (type) {
-      case 'integer': {
-        return 'Int';
-      }
-      case 'YYYYMMDD': {
-        return 'Date';
-      }
-      default: {
-        return 'String';
       }
     }
   }

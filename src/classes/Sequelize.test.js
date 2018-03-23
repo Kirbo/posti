@@ -1,6 +1,3 @@
-import fs from 'fs-extra';
-import path from 'path';
-
 import {
   findDatabaseConfig,
 } from '../utils';
@@ -120,18 +117,6 @@ describe('Sequelize', () => {
     });
   });
 
-  describe('castGraphQLType()', () => {
-    test('should cast integer', async () => {
-      expect(database.castGraphQLType('integer')).toBe('Int');
-    });
-    test('should cast YYYYMMDD', async () => {
-      expect(database.castGraphQLType('YYYYMMDD')).toBe('Date');
-    });
-    test('should not cast string', async () => {
-      expect(database.castGraphQLType('other')).toBe('String');
-    });
-  });
-
   describe('defineTable()', () => {
     test('should define table model', async () => {
       await database.defineTable('ADDRESSES');
@@ -141,39 +126,6 @@ describe('Sequelize', () => {
       expect(typeof database.getTableModel('ADDRESSES')).toBe('function');
       expect(typeof database.getTableModel('ZIPCODES')).toBe('function');
       expect(typeof database.getTableModel('ZIPCODE_CHANGES')).toBe('function');
-    });
-  });
-
-  describe('createTableSchema()', () => {
-    const typesDir = path.resolve(`${__dirname}/../graphql/Types`);
-    fs.removeSync(typesDir);
-
-    test('should not have Types dir', async () => {
-      expect(fs.existsSync(typesDir)).toBe(false);
-    });
-
-    test('should create GraphQL schema', async () => {
-      await database.createTableSchema('ADDRESSES');
-      let tableConfig = database.getTableConfigs('ADDRESSES');
-      let filePath = `${typesDir}/${tableConfig.graphqlQuery}.js`;
-      let file = path.resolve(filePath);
-      expect(fs.existsSync(file)).toBe(true);
-
-      await database.createTableSchema('ZIPCODES');
-      tableConfig = database.getTableConfigs('ZIPCODES');
-      filePath = `${typesDir}/${tableConfig.graphqlQuery}.js`;
-      file = path.resolve(filePath);
-      expect(fs.existsSync(file)).toBe(true);
-
-      await database.createTableSchema('ZIPCODE_CHANGES');
-      tableConfig = database.getTableConfigs('ZIPCODE_CHANGES');
-      filePath = `${typesDir}/${tableConfig.graphqlQuery}.js`;
-      file = path.resolve(filePath);
-      expect(fs.existsSync(file)).toBe(true);
-    });
-
-    test('should create Types dir', async () => {
-      expect(fs.existsSync(typesDir)).toBe(true);
     });
   });
 
