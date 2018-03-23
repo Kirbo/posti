@@ -1,3 +1,7 @@
+#!/usr/bin/env ./node_modules/.bin/babel-node
+
+import 'babel-polyfill';
+
 import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import bodyParser from 'body-parser';
