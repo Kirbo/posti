@@ -13,7 +13,7 @@ module.exports.default = {
     deleteOnComplete: true, // Should the temporary data directory be removed after script finishes.
   },
 
-  table: {
+  tables: {
     addresses: {
       name: 'addresses',
       useTempTable: true,
@@ -26,5 +26,11 @@ module.exports.default = {
       name: 'postalcode_changes',
       useTempTable: false,
     },
+  },
+
+  server: {
+    port: 3000,
+    tracing: false,
+    cacheControl: false,
   },
 };

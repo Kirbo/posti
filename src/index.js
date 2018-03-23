@@ -1,9 +1,5 @@
-const graphql = {
-  typeDefinitions: '',
-  resolvers: '',
-  schema: '',
-};
+import schema from './graphql';
 
 export {
-  graphql,
+  schema,
 };
