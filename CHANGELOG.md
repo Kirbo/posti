@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Breaking changes
 - Breaking changes to config file, check the [latest config here](./posti.config.example.js).
+  - Renamed `table` into `tables` on line 19.
+  - Added new configs: `server`.
 
 ### Added
 - GraphQL
