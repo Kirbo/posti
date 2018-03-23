@@ -7,6 +7,9 @@ module.exports = {
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: [
     '/src/config/',
+    '/src/graphql/',
+    '/src/build.js',
+    '/src/server.js',
     '/src/posti.js',
     '/src/index.js',
   ],
@@ -21,6 +24,9 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/src/config/',
+    '/src/graphql/',
+    '/src/build.js',
+    '/src/server.js',
     '/src/index.js',
   ],
 };

@@ -342,12 +342,12 @@ class Posti {
    * @returns {void}
    */
   clean = async () => {
-    logStep('Cleaning up');
     const tableConfigs = global.database.getTableConfigs(this.file.model);
     if (tableConfigs) {
       const oldTable = await global.database.tableExists(`${tableConfigs.nameFinished}_old`);
 
       if (oldTable && tableConfigs.deleteOnceComplete) {
+        logStep('Cleaning up');
         return global.database.dropTable(`${tableConfigs.nameFinished}_old`);
       }
     }
