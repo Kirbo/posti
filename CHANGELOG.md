@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [1.0.0] - 2018-03-26
+
+### Breaking changes
+- Breaking changes to config file, check the [latest config here](./posti.config.example.js).
+  - Renamed `table` into `tables` on line 19.
+  - Added new configs: `server`.
+
+### Changed
+- Optimised CI/CD pipeline.
+
+
 ## [0.2.3] - 2018-03-21
 
 ### Changed

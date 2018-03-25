@@ -23,9 +23,10 @@ class Database {
 
     this.tables = {
       ADDRESSES: {
-        nameProcessing: `${global.config.tablePrefix}temp_${global.config.table.addresses.name}`,
-        nameFinished: `${global.config.tablePrefix}${global.config.table.addresses.name}`,
-        deleteOnceComplete: global.config.table.addresses.useTempTable,
+        graphqlQuery: 'Address',
+        nameProcessing: `${global.config.tablePrefix}temp_${global.config.tables.addresses.name}`,
+        nameFinished: `${global.config.tablePrefix}${global.config.tables.addresses.name}`,
+        deleteOnceComplete: global.config.tables.addresses.useTempTable,
         fields: {
           id: {
             type: 'integer',
@@ -242,9 +243,10 @@ class Database {
       },
 
       ZIPCODES: {
-        nameProcessing: `${global.config.tablePrefix}temp_${global.config.table.postalcodes.name}`,
-        nameFinished: `${global.config.tablePrefix}${global.config.table.postalcodes.name}`,
-        deleteOnceComplete: global.config.table.postalcodes.useTempTable,
+        graphqlQuery: 'PostalCode',
+        nameProcessing: `${global.config.tablePrefix}temp_${global.config.tables.postalcodes.name}`,
+        nameFinished: `${global.config.tablePrefix}${global.config.tables.postalcodes.name}`,
+        deleteOnceComplete: global.config.tables.postalcodes.useTempTable,
         fields: {
           id: {
             type: 'integer',
@@ -390,9 +392,10 @@ class Database {
       },
 
       ZIPCODE_CHANGES: {
-        nameProcessing: `${global.config.tablePrefix}temp_${global.config.table.postalcode_changes.name}`,
-        nameFinished: `${global.config.tablePrefix}${global.config.table.postalcode_changes.name}`,
-        deleteOnceComplete: global.config.table.postalcode_changes.useTempTable,
+        graphqlQuery: 'PostalCodeChanges',
+        nameProcessing: `${global.config.tablePrefix}temp_${global.config.tables.postalcode_changes.name}`,
+        nameFinished: `${global.config.tablePrefix}${global.config.tables.postalcode_changes.name}`,
+        deleteOnceComplete: global.config.tables.postalcode_changes.useTempTable,
         fields: {
           id: {
             type: 'integer',

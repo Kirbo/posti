@@ -1,9 +1,12 @@
-const graphql = {
-  typeDefinitions: '',
-  resolvers: '',
-  schema: '',
-};
+
+import { findDatabaseConfig } from './utils';
+import postiConfig from './config';
+
+const configPath = findDatabaseConfig();
+const config = require(configPath).default;
 
 export {
-  graphql,
+  postiConfig,
+  configPath,
+  config,
 };

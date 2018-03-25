@@ -40,17 +40,17 @@ describe('Sequelize', () => {
   describe('getTableName()', () => {
     test('should get table names', async () => {
       expect(database.getTableName('ADDRESSES').nameProcessing)
-        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.table.addresses.name}`);
+        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.tables.addresses.name}`);
       expect(database.getTableName('ADDRESSES').nameFinished)
-        .toBe(`${originalTablePrefix}test_sequelize_${global.config.table.addresses.name}`);
+        .toBe(`${originalTablePrefix}test_sequelize_${global.config.tables.addresses.name}`);
       expect(database.getTableName('ZIPCODES').nameProcessing)
-        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.table.postalcodes.name}`);
+        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.tables.postalcodes.name}`);
       expect(database.getTableName('ZIPCODES').nameFinished)
-        .toBe(`${originalTablePrefix}test_sequelize_${global.config.table.postalcodes.name}`);
+        .toBe(`${originalTablePrefix}test_sequelize_${global.config.tables.postalcodes.name}`);
       expect(database.getTableName('ZIPCODE_CHANGES').nameProcessing)
-        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.table.postalcode_changes.name}`);
+        .toBe(`${originalTablePrefix}test_sequelize_temp_${global.config.tables.postalcode_changes.name}`);
       expect(database.getTableName('ZIPCODE_CHANGES').nameFinished)
-        .toBe(`${originalTablePrefix}test_sequelize_${global.config.table.postalcode_changes.name}`);
+        .toBe(`${originalTablePrefix}test_sequelize_${global.config.tables.postalcode_changes.name}`);
     });
   });
 

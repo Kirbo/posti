@@ -206,6 +206,7 @@ describe('Posti', () => {
       await global.database.dropTable(global.database.getTableName('ZIPCODES').nameProcessing);
       await global.database.dropTable(global.database.getTableName('ZIPCODES').nameFinished);
       await global.database.dropTable(global.database.getTableName('ZIPCODE_CHANGES').nameProcessing);
+      await global.database.dropTable(global.database.getTableName('ZIPCODE_CHANGES').nameFinished);
 
       await posti.allFinished();
       global.config.process.deleteOnComplete = true;
