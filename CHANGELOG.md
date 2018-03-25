@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
-## [1.0.0] - 2018-03-xx
+## [1.0.0] - 2018-03-26
 
 ### Breaking changes
 - Breaking changes to config file, check the [latest config here](./posti.config.example.js).
