@@ -9,7 +9,7 @@
 
 ## Description
 
-`posti` is a tool to automagically download latest basic address data from [Finnish post - Posti](https://www.posti.fi/), to parse the files and insert the contents into database.
+`posti` is a tool to automagically download latest basic address data from [Finnish post - Posti](https://www.posti.fi/), to parse the files and insert the contents into database. **Check also [`posti-graphql`](https://www.npmjs.com/package/posti-graphql).**
 
 ## Changelog
 
