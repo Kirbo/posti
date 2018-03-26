@@ -392,7 +392,7 @@ class Database {
       },
 
       ZIPCODE_CHANGES: {
-        graphqlQuery: 'PostalCodeChanges',
+        graphqlQuery: 'PostalCodeChange',
         nameProcessing: `${global.config.tablePrefix}temp_${global.config.tables.postalcode_changes.name}`,
         nameFinished: `${global.config.tablePrefix}${global.config.tables.postalcode_changes.name}`,
         deleteOnceComplete: global.config.tables.postalcode_changes.useTempTable,

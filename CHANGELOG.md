@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [1.0.2] - 2018-03-26
+
+### Breaking changes
+- Breaking changes to config file, check the [latest config here](./posti.config.example.js).
+  - Renamed `ZIPCODE_CHANGES.graphqlQuery` from `PostalCodeChanges` into `PostalCodeChange` on line 395.
+
+
 ## [1.0.1] - 2018-03-26
 
 ### Added
