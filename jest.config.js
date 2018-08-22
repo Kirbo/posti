@@ -18,6 +18,7 @@ module.exports = {
   testMatch: [
     '**/src/**.test.js',
   ],
+  testURL: 'http://localhost/',
   testPathIgnorePatterns: [
     '/node_modules/',
     '/src/config/',
