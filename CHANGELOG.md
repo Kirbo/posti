@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
-## [1.0.4] - 2018-08-29
+## [2.0.0] - 2018-08-29
 
 ### Changed
 - Updated the dependencies.
+
+### Breaking changes
+- Had to change engine dependency from node `0.1.0` into `6.0.0`.
 
 
 ## [1.0.3] - 2018-08-22
