@@ -19,7 +19,7 @@ Check changes [here](./CHANGELOG.md).
 
 **Postal Code Services - Homepage:**
 
-  - [Finnish](https://www.posti.fi/yritysasiakkaat/apu-ja-tuki/postinumeropalvelut/postinumerotiedostot.html)
+  - [Finnish](https://support.posti.fi/fi/postinumeropalvelut/postinumerotiedostot.html)
   - [English](https://www.posti.fi/business/help-and-support/postal-code-services/postal-code-files.html)
   - [Swedish](https://www.posti.fi/foretag/hjalp-och-stod/postnummertjanster/postnummerfiler.html)
 
