@@ -22,6 +22,7 @@ install:
       - node_modules
     expire_in: 1 day
   script:
+    - rm yarn.lock
     - yarn
 
 lint:
