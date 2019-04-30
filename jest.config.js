@@ -2,7 +2,7 @@ module.exports = {
   bail: true,
   collectCoverage: true,
   collectCoverageFrom: [
-    '**/src/**.js',
+    'src/?(**/)*.[jt]s',
   ],
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: [
@@ -16,7 +16,7 @@ module.exports = {
   ],
   notify: true,
   testMatch: [
-    '**/src/**.test.js',
+    '**/?(*.)test.[jt]s',
   ],
   testURL: 'http://localhost/',
   testPathIgnorePatterns: [
