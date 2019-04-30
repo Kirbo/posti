@@ -1,6 +1,6 @@
 module.exports.default = {
   dialect: 'mysql', // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
-  host: 'localhost',
+  host: 'linuxserver/mariadb',
   user: 'POSTI',
   password: 'POSTI',
   database: 'POSTI',
