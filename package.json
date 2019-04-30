@@ -46,7 +46,6 @@
     "pg-hstore": "2.3.2",
     "request": "2.88.0",
     "sequelize": "5.8.0",
-    "sqlite3": "4.0.6",
     "tedious": "6.1.1",
     "unzip": "0.1.11"
   },
