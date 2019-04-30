@@ -71,6 +71,7 @@ publish to npm:
     - build
   allow_failure: false
   script:
+    - echo "${npmrc}" > ~/.npmrc
     - echo "Publish version $(node -p -e "require('./package.json').version")"
     - npm publish
 
