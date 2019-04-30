@@ -21,7 +21,8 @@
           },
           "loose": true,
           "useBuiltIns": true,
-          "debug": true
+          "debug": true,
+          "comments": false
         }],
         ["minify", {
           "mangle": false
@@ -30,7 +31,6 @@
       "plugins": [
         "@babel/plugin-proposal-class-properties",
         "shebang",
-        "remove-comments",
         "minify-constant-folding",
         "minify-flip-comparisons",
         "minify-guarded-expressions",

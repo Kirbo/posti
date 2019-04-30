@@ -1,4 +1,4 @@
-image: node:8.15.1
+image: kirbownz/node8-rsync-python-ssh
 
 ###### STAGES #################################################################
 stages:
@@ -14,6 +14,14 @@ stages:
     - gitlab-org
   variables:
     GIT_STRATEGY: fetch
+
+variables:
+  # DinD variables
+  DOCKER_HOST: "tcp://docker:2375"
+  # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb)
+  MYSQL_DATABASE: POSTI
+  MYSQL_USER: POSTI
+  MYSQL_PASSWORD: POSTI
 
 ###### JOBS ###################################################################
 install:
@@ -35,8 +43,11 @@ lint:
   script:
     - yarn lint
 
-test:
+mariadb:
   <<: *general
+  services:
+    - docker:dind
+    - linuxserver/mariadb
   stage: test
   dependencies:
     - install
@@ -45,8 +56,7 @@ test:
       - coverage
     expire_in: 1 month
   script:
-    - mkdir ~/.posti
-    - echo "${config}" > ~/.posti/config.js
+    - cp test/mariadb.config.js > ~/.posti/config.js
     - yarn test --ci --coverage
 
 build:
@@ -81,7 +91,7 @@ update pages:
   only:
     - release
   dependencies:
-    - test
+    - mariadb
   script:
     - ${update_pages_command}
 
