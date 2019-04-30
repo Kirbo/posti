@@ -43,7 +43,8 @@ test:
       - coverage
     expire_in: 1 month
   script:
-    - cp posti.config.example.js posti.config.js
+    - mkdir ~/.posti
+    - echo "${config}" > ~/.posti/config.js
     - yarn test --ci --coverage
 
 build:
