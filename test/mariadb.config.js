@@ -4,7 +4,7 @@ module.exports.default = {
   user: 'POSTI',
   password: 'POSTI',
   database: 'POSTI',
-  tablePrefix: 'test_',
+  tablePrefix: '',
   dialectOptions: {}, // http://docs.sequelizejs.com/manual/installation/usage.html#options
 
   process: {

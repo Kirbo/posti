@@ -18,7 +18,8 @@ stages:
 variables:
   # DinD variables
   DOCKER_HOST: "tcp://docker:2375"
-  # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb)
+  # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
+  MYSQL_ROOT_PASSWORD: POSTI
   MYSQL_DATABASE: POSTI
   MYSQL_USER: POSTI
   MYSQL_PASSWORD: POSTI
@@ -46,8 +47,10 @@ lint:
 mariadb:
   <<: *general
   services:
-    - docker:dind
+    - docker:stable-dind
+      allow_failure: false
     - linuxserver/mariadb
+      allow_failure: false
   stage: test
   dependencies:
     - install
