@@ -48,9 +48,7 @@ mariadb:
   <<: *general
   services:
     - docker:stable-dind
-      allow_failure: false
     - linuxserver/mariadb
-      allow_failure: false
   stage: test
   dependencies:
     - install
