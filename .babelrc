@@ -38,7 +38,6 @@
         "minify-replace",
         "minify-simplify",
         "minify-type-constructors",
-        "transform-decorators-legacy",
         "transform-member-expression-literals",
         "transform-merge-sibling-variables",
         "transform-minify-booleans",
