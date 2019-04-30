@@ -1,3 +1,5 @@
+image: node:8.15.1
+
 ###### STAGES #################################################################
 stages:
   - install
@@ -9,7 +11,7 @@ stages:
 ###### TEMPLATES ##############################################################
 .general: &general
   tags:
-    - devaus
+    - gitlab-org
   variables:
     GIT_STRATEGY: fetch
 
@@ -22,6 +24,7 @@ install:
       - node_modules
     expire_in: 1 day
   script:
+    - rm yarn.lock
     - yarn
 
 lint:
@@ -42,6 +45,8 @@ test:
       - coverage
     expire_in: 1 month
   script:
+    - mkdir ~/.posti
+    - echo "${config}" > ~/.posti/config.js
     - yarn test --ci --coverage
 
 build:

@@ -65,3 +65,4 @@ posti.config.js
 
 package-lock.json
 **/dist/**
+.DS_Store

@@ -19,7 +19,7 @@ Check changes [here](./CHANGELOG.md).
 
 **Postal Code Services - Homepage:**
 
-  - [Finnish](https://www.posti.fi/yritysasiakkaat/apu-ja-tuki/postinumeropalvelut/postinumerotiedostot.html)
+  - [Finnish](https://support.posti.fi/fi/postinumeropalvelut/postinumerotiedostot.html)
   - [English](https://www.posti.fi/business/help-and-support/postal-code-services/postal-code-files.html)
   - [Swedish](https://www.posti.fi/foretag/hjalp-och-stod/postnummertjanster/postnummerfiler.html)
 
@@ -69,7 +69,6 @@ You can also use `~` in the path, which will be converted as your home directory
 This tool uses [`Sequelize`](https://github.com/sequelize/sequelize), therefore this tool supports/should support:
 - MySQL / MariaDB
 - Postgres
-- SQLite
 - Microsoft SQL Server
 
 I've only tested the usage with MariaDB, so please, if you try any other of the supported databases, let me know if you're having issues and/or if its working, so that I can update this readme.
