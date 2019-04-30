@@ -16,13 +16,8 @@ stages:
     GIT_STRATEGY: fetch
 
 variables:
-  # DinD variables
+  # Docker in Docker variables
   DOCKER_HOST: "tcp://docker:2375"
-  # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
-  MYSQL_ROOT_PASSWORD: POSTI
-  MYSQL_DATABASE: POSTI
-  MYSQL_USER: POSTI
-  MYSQL_PASSWORD: POSTI
 
 ###### JOBS ###################################################################
 install:
@@ -46,9 +41,36 @@ lint:
 
 mariadb:
   <<: *general
+  variables:
+    # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
+    MYSQL_DATABASE: POSTI
+    MYSQL_USER: POSTI
+    MYSQL_PASSWORD: POSTI
   services:
     - docker:stable-dind
     - linuxserver/mariadb
+  stage: test
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - coverage
+    expire_in: 1 month
+  script:
+    - mkdir ~/.posti
+    - cp test/mariadb.config.js ~/.posti/config.js
+    - yarn test --ci --coverage
+
+postgres:
+  <<: *general
+  variables:
+    # Configure mysql environment variables (https://hub.docker.com/_/postgres#environment-variables)
+    POSTGRES_DB: POSTI
+    POSTGRES_USER: POSTI
+    POSTGRES_PASSWORD: POSTI
+  services:
+    - docker:stable-dind
+    - postgres:latest
   stage: test
   dependencies:
     - install
