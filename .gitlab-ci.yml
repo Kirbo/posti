@@ -57,7 +57,7 @@ mariadb:
     expire_in: 1 month
   script:
     - mkdir ~/.posti
-    - cp test/mariadb.config.js > ~/.posti/config.js
+    - cp test/mariadb.config.js ~/.posti/config.js
     - yarn test --ci --coverage
 
 build:
