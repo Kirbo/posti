@@ -92,6 +92,13 @@ deploy to github:
     - release
   dependencies: []
   script:
+    - mkdir -p ~/.ssh
+    - echo "${ssh_key}" > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh
+    - chmod 600 ~/.ssh/id_rsa
+    - echo "${ssh_config}" > ~/.ssh/config
+    - echo "${gitconfig}" > ~/.gitconfig
+    - ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
     - if ! [[ $(git remote | grep github | wc -l) > "0" ]]; then git remote add github git@github.com:kirbo/posti.git; fi
     - export PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
     - git push github HEAD:refs/heads/master
