@@ -46,6 +46,7 @@
     "pg-hstore": "2.3.2",
     "request": "2.88.0",
     "sequelize": "5.8.0",
+    "sqlite3": "4.0.6",
     "tedious": "6.1.1",
     "unzip": "0.1.11"
   },
@@ -79,7 +80,6 @@
     "eslint-plugin-require-jsdoc": "1.0.4",
     "husky": "2.1.0",
     "jest": "24.7.1",
-    "jest-plugin-console-matchers": "2.9.0",
-    "sqlite3": "4.0.6"
+    "jest-plugin-console-matchers": "2.9.0"
   }
 }
