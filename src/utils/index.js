@@ -31,12 +31,15 @@ const logStep = (step) => {
  * Output error.
  *
  * @param {String} error - Error.
+ * @param {Boolean} shouldThrow - Should throw error or not.
  *
  * @returns {void}
  */
-const logError = (error) => {
+const logError = (error, shouldThrow = true) => {
   console.error(`${_colors.red('!!!')} ${error} ${_colors.red('!!!')}`);
-  throw new Error(error);
+  if (shouldThrow) {
+    throw new Error(error);
+  }
 };
 
 /**

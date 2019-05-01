@@ -82,8 +82,6 @@ postgres:
     - mkdir ~/.posti
     - cp test/postgresql.config.js ~/.posti/config.js
     - yarn test --ci --coverage
-  # Not working yet, so allow failure for now.
-  allow_failure: true
 
 build:
   <<: *general
