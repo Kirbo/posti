@@ -1,6 +1,6 @@
 {
   "name": "posti",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Posti Basic Address auto-updater",
   "repository": "https://github.com/kirbo/posti",
   "author": "Kimmo Saari <kirbo@kirbo-designs.com>",
@@ -44,6 +44,7 @@
     "mysql2": "1.6.5",
     "pg": "7.10.0",
     "pg-hstore": "2.3.2",
+    "regenerator-runtime": "0.13.2",
     "request": "2.88.0",
     "sequelize": "5.8.0",
     "sqlite3": "4.0.6",
