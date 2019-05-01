@@ -7,21 +7,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [3.0.4] - 2019-05-01
+
+### Fixed
+- Fixing CI/CD pipeline.
+
+
 ## [3.0.3] - 2019-05-01
 
-### Changed
+### Fixed
 - Fixing CI/CD pipeline.
 
 
 ## [3.0.2] - 2019-05-01
 
-### Changed
-- Removed redundant dependencies.
+### Removed
+- Redundant dependencies.
 
 
 ## [3.0.1] - 2019-05-01
 
-### Changed
+### Fixed
 - Fixing CI/CD pipeline.
 
 
@@ -38,19 +44,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.1.3] - 2019-04-39
 
-### Changed
+### Fixed
 - Fixing CI/CD pipeline.
 
 
 ## [2.1.2] - 2019-04-39
 
-### Changed
+### Fixed
 - Fixing CI/CD pipeline.
 
 
 ## [2.1.1] - 2019-04-39
 
-### Changed
+### Fixed
 - Fixing CI/CD pipeline.
 
 
