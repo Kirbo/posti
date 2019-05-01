@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [3.0.0] - 2019-05-01
+
+### Added
+- New property in configuration file: `server.playground`.
+
+### Breaking changes
+- Had to split `server.limiter` in configuration file into two separate configurations:
+  - `server.rateLimiter`
+  - `server.speedLimiter`
+
+
 ## [2.1.3] - 2019-04-39
 
 ### Changed

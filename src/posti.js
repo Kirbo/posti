@@ -1,6 +1,6 @@
 #!/usr/bin/env ./node_modules/.bin/babel-node
 
-import 'babel-polyfill';
+import '@babel/polyfill';
 
 import {
   logBlock,

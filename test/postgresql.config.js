@@ -32,11 +32,19 @@ module.exports.default = {
     port: 3005,
     tracing: false,
     cacheControl: true,
-    limiter: {
+    rateLimiter: {
       windowMs: 24 * 60 * 60 * 1000,
+      max: 50,
+    },
+    speedLimiter: {
       delayAfter: 10,
       delayMs: 5 * 1000,
-      max: 50,
+    },
+    playground: {
+      endpoint: '/graphql',
+      settings: {
+        'editor.theme': 'light',
+      },
     },
   },
 };

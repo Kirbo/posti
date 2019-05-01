@@ -44,15 +44,32 @@ module.exports.default = {
     production: false,
 
     // https://www.npmjs.com/package/express-rate-limit#configuration
-    limiter: {
+    rateLimiter: {
       // 5 minutes
       windowMs: 5 * 60 * 1000,
       // limit each IP to 250 requests per windowMs
       max: 250,
+    },
+
+    // https://www.npmjs.com/package/express-slow-down#configuration
+    speedLimiter: {
       // delay after n requests.
       delayAfter: 5,
       // disable delaying - full speed until the max limit is reached
       delayMs: 100,
+      // maximum delay
+      maxDelayMs: 30000,
+    },
+
+    // https://www.apollographql.com/docs/apollo-server/features/graphql-playground#configuring-playground
+    playground: {
+      // the endpoint where the queries are being sent to
+      endpoint: '/graphql',
+      // playground settings
+      settings: {
+        // theme, can either be: light  or  dark
+        'editor.theme': 'dark',
+      },
     },
   },
 };
