@@ -42,6 +42,12 @@ module.exports.default = {
     cacheControl: false,
     // To disable GraphiQL and Playground, change this to true.
     production: false,
+    // https://www.npmjs.com/package/cors#configuring-cors
+    // To disable cors, just remove the whole object.
+    cors: {
+      // Allow cors from every origin.
+      origin: '*',
+    },
 
     // https://www.npmjs.com/package/express-rate-limit#configuration
     rateLimiter: {

@@ -1,6 +1,6 @@
 {
   "name": "posti",
-  "version": "3.0.4",
+  "version": "3.1.0",
   "description": "Posti Basic Address auto-updater",
   "repository": "https://github.com/kirbo/posti",
   "author": "Kimmo Saari <kirbo@kirbo-designs.com>",
@@ -65,6 +65,7 @@
     "babel-plugin-minify-mangle-names": "0.5.0",
     "babel-plugin-minify-replace": "0.5.0",
     "babel-plugin-minify-simplify": "0.5.0",
+    "babel-plugin-shebang": "1.0.0",
     "babel-preset-minify": "0.5.0",
     "cross-env": "5.2.0",
     "eslint": "5.16.0",

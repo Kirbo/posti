@@ -32,6 +32,9 @@ module.exports.default = {
     port: 3005,
     tracing: false,
     cacheControl: true,
+    cors: {
+      origin: '*',
+    },
     rateLimiter: {
       windowMs: 24 * 60 * 60 * 1000,
       max: 50,

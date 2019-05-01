@@ -1305,6 +1305,11 @@ babel-plugin-minify-type-constructors@^0.4.3:
   dependencies:
     babel-helper-is-void-0 "^0.4.3"
 
+babel-plugin-shebang@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/babel-plugin-shebang/-/babel-plugin-shebang-1.0.0.tgz#e236fd7815ac0f4b98d071837aca3661a9c12bc4"
+  integrity sha512-k/taXi7NY/4G/r+g9HX7RP1tTnsqR9xDZMdwdicY4QgHIDPNx0+uZ4V36HExR0j9HGSbXuvjeIGEu1hW+hw0yA==
+
 babel-plugin-transform-inline-consecutive-adds@^0.4.3:
   version "0.4.3"
   resolved "https://registry.npmjs.org/babel-plugin-transform-inline-consecutive-adds/-/babel-plugin-transform-inline-consecutive-adds-0.4.3.tgz#323d47a3ea63a83a7ac3c811ae8e6941faf2b0d1"

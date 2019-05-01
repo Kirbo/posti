@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [3.1.0] - 2019-05-01
+
+### Added
+- Configuration for `cors` in `server.cors`.
+
+### Fixed
+- Build didn't replace shebang from `babel-node` into `node`.
+
+
 ## [3.0.4] - 2019-05-01
 
 ### Fixed
