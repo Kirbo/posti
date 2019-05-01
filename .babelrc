@@ -1,13 +1,19 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "node": "current"
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        },
+        "useBuiltIns": "usage",
+        "corejs": 3
       }
-    }]
+    ]
   ],
   "plugins": [
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread",
   ],
   "env": {
     "build": {
@@ -15,35 +21,28 @@
         "**/*.test.js"
       ],
       "presets": [
-        ["env", {
-          "targets": {
-            "node": "6.0.0"
-          },
-          "loose": true,
-          "useBuiltIns": true,
-          "debug": true,
-          "comments": false
-        }],
-        ["minify", {
-          "mangle": false
-        }]
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "0.1.0"
+            },
+            "loose": true,
+            "useBuiltIns": "usage",
+            "debug": true,
+            "corejs": 3
+          }
+        ],
+        [
+          "minify",
+          {
+            "mangle": false
+          }
+        ]
       ],
       "plugins": [
         "@babel/plugin-proposal-class-properties",
-        "shebang",
-        "minify-constant-folding",
-        "minify-flip-comparisons",
-        "minify-guarded-expressions",
-        "minify-infinity",
-        "minify-replace",
-        "minify-simplify",
-        "minify-type-constructors",
-        "transform-member-expression-literals",
-        "transform-merge-sibling-variables",
-        "transform-minify-booleans",
-        "transform-property-literals",
-        "transform-simplify-comparison-operators",
-        "transform-undefined-to-void"
+        "@babel/plugin-proposal-object-rest-spread"
       ]
     }
   }
