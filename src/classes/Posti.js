@@ -10,7 +10,7 @@ import iconv from 'iconv-lite';
 import {
   logBlock,
   logStep,
-  logError,
+  throwError,
   sliceArrayIntoChunks,
 } from '../utils';
 
@@ -207,7 +207,7 @@ class Posti {
             });
         })
         .pipe(fs.createWriteStream(FILE_PATH))
-        .on('error', logError);
+        .on('error', throwError);
     })
   );
 
@@ -297,7 +297,7 @@ class Posti {
           databaseModel
             .bulkCreate(chunk)
             .then(() => PROGRESS.increment(chunk.length))
-            .catch(logError)
+            .catch(throwError)
         );
 
         readline
