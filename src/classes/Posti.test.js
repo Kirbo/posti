@@ -5,7 +5,7 @@ import os from 'os';
 import fs from 'fs-extra';
 
 import {
-  logError,
+  throwError,
   findDatabaseConfig,
 } from '../utils';
 
@@ -107,7 +107,7 @@ describe('Posti', () => {
           force: true,
         },
         argv: [],
-        exit: code => logError(code),
+        exit: code => throwError(code),
       };
 
       const newFiles = await posti.getNewFiles(mockProcess);

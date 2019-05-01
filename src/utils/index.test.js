@@ -7,6 +7,7 @@ import {
   logBlock,
   logStep,
   logError,
+  throwError,
   logFinished,
   sliceArrayIntoChunks,
   findDatabaseConfig,
@@ -28,8 +29,14 @@ describe('utils', () => {
   });
 
   describe('logError()', () => {
+    test('should console.error()', () => {
+      expect(() => { logError('It worked'); }).toConsoleError();
+    });
+  });
+
+  describe('throwError()', () => {
     test('should throw error', () => {
-      expect(() => { logError('It worked'); }).toThrow(new Error('It worked'));
+      expect(() => { throwError('It worked'); }).toThrow(new Error('It worked'));
     });
   });
 

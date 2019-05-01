@@ -31,15 +31,24 @@ const logStep = (step) => {
  * Output error.
  *
  * @param {String} error - Error.
- * @param {Boolean} shouldThrow - Should throw error or not.
  *
  * @returns {void}
  */
-const logError = (error, shouldThrow = true) => {
+const logError = (error) => {
   console.error(`${_colors.red('!!!')} ${error} ${_colors.red('!!!')}`);
-  if (shouldThrow) {
-    throw new Error(error);
-  }
+};
+
+
+/**
+ * Throw error.
+ *
+ * @param {String} error - Error.
+ *
+ * @returns {void}
+ */
+const throwError = (error) => {
+  logError(error);
+  throw new Error(error);
 };
 
 /**
@@ -184,6 +193,7 @@ export {
   logBlock,
   logStep,
   logError,
+  throwError,
   logFinished,
   sliceArrayIntoChunks,
   findDatabaseConfig,

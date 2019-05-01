@@ -801,9 +801,7 @@ class Database {
         },
         { concurrency: 10 }
       )
-      .catch((error) => {
-        logError(error, false);
-      })
+      .catch(logError)
   )
 
   /**

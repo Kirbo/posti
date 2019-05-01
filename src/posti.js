@@ -2,7 +2,7 @@
 
 import {
   logBlock,
-  logError,
+  throwError,
   logFinished,
   findDatabaseConfig,
   millisecondsToTime,
@@ -42,6 +42,6 @@ global.postiConfig = postiConfig;
     logFinished(millisecondsToTime(new Date() - started));
     process.exit(0);
   } catch (error) {
-    logError(error);
+    throwError(error);
   }
 })();
