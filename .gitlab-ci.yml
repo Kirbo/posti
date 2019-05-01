@@ -119,7 +119,13 @@ update pages:
   dependencies:
     - mariadb
   script:
-    - ${update_pages_command}
+    - mkdir -p ~/.ssh
+    - echo "${ssh_key}" > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh
+    - chmod 600 ~/.ssh/id_rsa
+    - echo "${gitconfig}" > ~/.gitconfig
+    - ssh-keyscan -t rsa ${demo_host} >> ~/.ssh/known_hosts
+    - rsync coverage ${demo_user}@${demo_host}:${demo_path} --delete-after -r -v
 
 deploy to github:
   <<: *general
