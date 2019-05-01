@@ -141,7 +141,7 @@ describe('Posti', () => {
     });
   });
 
-  describe('processFile()', async () => {
+  describe('processFile()', () => {
     test('should process ZIPCODE_CHANGES file', async () => {
       await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODE_CHANGES']);

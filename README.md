@@ -69,6 +69,7 @@ You can also use `~` in the path, which will be converted as your home directory
 This tool uses [`Sequelize`](https://github.com/sequelize/sequelize), therefore this tool supports/should support:
 - MySQL / MariaDB
 - Postgres
+- SQLite
 - Microsoft SQL Server
 
 I've only tested the usage with MariaDB, so please, if you try any other of the supported databases, let me know if you're having issues and/or if its working, so that I can update this readme.

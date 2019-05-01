@@ -30,12 +30,11 @@ class Database {
         fields: {
           id: {
             type: 'integer',
-            unsigned: true,
             index: false,
             dbType: {
               primaryKey: true,
               autoIncrement: true,
-              type: Sequelize.INTEGER(10),
+              type: Sequelize.INTEGER,
             },
           },
           record: {
@@ -132,7 +131,7 @@ class Database {
             start: 187,
             length: 1,
             type: 'integer',
-            dbType: Sequelize.INTEGER(1),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
           smallestBuildingNumber1: {
@@ -140,7 +139,7 @@ class Database {
             start: 188,
             length: 5,
             type: 'integer',
-            dbType: Sequelize.INTEGER(5),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
           smallestDeliveryLetter1: {
@@ -164,7 +163,7 @@ class Database {
             start: 195,
             length: 5,
             type: 'integer',
-            dbType: Sequelize.INTEGER(5),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
           smallestDeliveryLetter2: {
@@ -180,7 +179,7 @@ class Database {
             start: 201,
             length: 5,
             type: 'integer',
-            dbType: Sequelize.INTEGER(5),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
           highestDeliveryLetter1: {
@@ -204,7 +203,7 @@ class Database {
             start: 208,
             length: 5,
             type: 'integer',
-            dbType: Sequelize.INTEGER(5),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
           highestDeliveryLetter2: {
@@ -250,12 +249,11 @@ class Database {
         fields: {
           id: {
             type: 'integer',
-            unsigned: true,
             index: false,
             dbType: {
               primaryKey: true,
               autoIncrement: true,
-              type: Sequelize.INTEGER(10),
+              type: Sequelize.INTEGER,
             },
           },
           record: {
@@ -328,7 +326,7 @@ class Database {
             start: 111,
             length: 1,
             type: 'integer',
-            dbType: Sequelize.INTEGER(1),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
           regionId: {
@@ -385,7 +383,7 @@ class Database {
             start: 220,
             length: 1,
             type: 'integer',
-            dbType: Sequelize.INTEGER(1),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
         },
@@ -399,12 +397,11 @@ class Database {
         fields: {
           id: {
             type: 'integer',
-            unsigned: true,
             index: false,
             dbType: {
               primaryKey: true,
               autoIncrement: true,
-              type: Sequelize.INTEGER(10),
+              type: Sequelize.INTEGER,
             },
           },
           record: {
@@ -597,7 +594,7 @@ class Database {
             start: 452,
             length: 2,
             type: 'integer',
-            dbType: Sequelize.INTEGER(2),
+            dbType: Sequelize.INTEGER,
             index: true,
           },
         },
