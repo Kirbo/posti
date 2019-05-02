@@ -40,6 +40,7 @@ module.exports.default = {
       max: 50,
     },
     speedLimiter: {
+      windowMs: 60 * 60 * 1000,
       delayAfter: 10,
       delayMs: 5 * 1000,
     },
@@ -48,6 +49,10 @@ module.exports.default = {
       settings: {
         'editor.theme': 'light',
       },
+    },
+    query: {
+      defaultLimit: 100,
+      maxLimit: 10000,
     },
   },
 };

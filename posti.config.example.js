@@ -51,20 +51,24 @@ module.exports.default = {
 
     // https://www.npmjs.com/package/express-rate-limit#configuration
     rateLimiter: {
-      // 5 minutes
+      // 5 minute rate limit window for requests
       windowMs: 5 * 60 * 1000,
       // limit each IP to 250 requests per windowMs
       max: 250,
+      // message to display when requests exceeded the maximum allowed
+      message: { error: 'You have exceeded the maximum allowed requests (250) for the given window (5 minutes).' },
     },
 
     // https://www.npmjs.com/package/express-slow-down#configuration
     speedLimiter: {
-      // delay after n requests.
+      // 60 minute speed limit window for requests
+      windowMs: 60 * 60 * 1000,
+      // delay after 5 requests.
       delayAfter: 5,
-      // disable delaying - full speed until the max limit is reached
+      // how many milliseconds do you want to delay per request, after the "delayAfter" has exceeded
       delayMs: 100,
-      // maximum delay
-      maxDelayMs: 30000,
+      // maximum delay 30 seconds
+      maxDelayMs: 30 * 1000,
     },
 
     // https://www.apollographql.com/docs/apollo-server/features/graphql-playground#configuring-playground
@@ -76,6 +80,14 @@ module.exports.default = {
         // theme, can either be: light  or  dark
         'editor.theme': 'dark',
       },
+    },
+
+    // Configurations for queries
+    query: {
+      // Default limit for queries
+      defaultLimit: 100,
+      // Maximum allowed limit for queries
+      maxLimit: 10000,
     },
   },
 };
