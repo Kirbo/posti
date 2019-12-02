@@ -36,7 +36,7 @@ class Posti {
    */
   setLatest = async () => {
     this.newFiles = await this.getLatest();
-  };
+  }
 
   /**
    * Get last processed files
@@ -49,7 +49,7 @@ class Posti {
       return files;
     }
     return [];
-  };
+  }
 
   /**
    * Get last processed files
@@ -60,7 +60,7 @@ class Posti {
    */
   writeLatest = (files) => {
     fs.writeFileSync(global.postiConfig.cache.latestFile, files, 'utf8');
-  };
+  }
 
   /**
    * Check if there are any new files.
@@ -76,7 +76,7 @@ class Posti {
       this.latest = [];
     }
 
-    return this.files.filter(file => !this.latest.includes(file.filename));
+    return this.files.filter((file) => !this.latest.includes(file.filename));
   }
 
   /**
@@ -109,7 +109,7 @@ class Posti {
   createCacheDir = async () => {
     logBlock(`Using temp folder: ${global.postiConfig.cache.tempDir}`);
     fs.ensureDirSync(global.postiConfig.cache.tempDir);
-  };
+  }
 
   /**
    * Read zip file URLs from webpcode.
@@ -145,7 +145,7 @@ class Posti {
    *
    * @returns {void}
    */
-  processFiles = async files => (
+  processFiles = async (files) => (
     Promise
       .each(files, await this.processFile)
       .then(() => {
@@ -153,7 +153,7 @@ class Posti {
           this.removeFiles();
         }
 
-        this.writeLatest(files.map(file => file.filename));
+        this.writeLatest(files.map((file) => file.filename));
       })
   )
 
@@ -180,7 +180,7 @@ class Posti {
     // This file has already been processed.
     logBlock(`Skipping file: ${file.filename}`);
     return this.clean();
-  };
+  }
 
   /**
    * Download file from posti.
@@ -250,16 +250,16 @@ class Posti {
    *
    * @returns {Promise} Promise
    */
-  parseFile = async () => (
-    new Promise(async (resolve) => {
-      const datFile = `${this.file.extensionless}_utf8.dat`;
-      const tableConfigs = global.database.getTableConfigs(this.file.model);
-      if (tableConfigs) {
+  parseFile = async () => {
+    const tableConfigs = global.database.getTableConfigs(this.file.model);
+    if (tableConfigs) {
+      const oldTable = await global.database.tableExists(tableConfigs.nameFinished);
+      return new Promise((resolve) => {
+        const datFile = `${this.file.extensionless}_utf8.dat`;
         logStep(`Parsing file: ${datFile}`);
         const PROGRESS = new progress.Bar(global.postiConfig.progressbar.insertConfig);
         const FILE_PATH = path.resolve(global.postiConfig.cache.tempDir, datFile);
         const databaseModel = global.database.getTableModel(this.file.model);
-        const oldTable = await global.database.tableExists(tableConfigs.nameFinished);
         const rows = [];
 
         const emptyRow = Object.keys(tableConfigs.fields);
@@ -293,7 +293,7 @@ class Posti {
          *
          * @returns {void}
          */
-        const insertChunk = chunk => (
+        const insertChunk = (chunk) => (
           databaseModel
             .bulkCreate(chunk)
             .then(() => PROGRESS.increment(chunk.length))
@@ -328,11 +328,9 @@ class Posti {
                 resolve();
               });
           });
-      } else {
-        resolve();
-      }
-    })
-  );
+      });
+    }
+  }
 
   /**
    * Clean after processing file.
@@ -361,7 +359,7 @@ class Posti {
   removeFiles = () => {
     logBlock(`Removing temp folder ${global.postiConfig.cache.tempDir}`);
     fs.removeSync(global.postiConfig.cache.tempDir);
-  };
+  }
 
   /**
    * Things to do after everything is done.
@@ -372,7 +370,7 @@ class Posti {
     if (global.config.process.deleteOnComplete) {
       this.removeFiles();
     }
-    this.writeLatest(this.files.map(file => file.filename));
+    this.writeLatest(this.files.map((file) => file.filename));
   }
 }
 

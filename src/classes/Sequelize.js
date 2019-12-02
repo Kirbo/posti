@@ -639,9 +639,9 @@ class Database {
    *
    * @returns {Object} Table definitions.
    */
-  getTableDefinitions = tableKey => (
+  getTableDefinitions = (tableKey) => (
     Object.keys(this.tables[tableKey].fields)
-      .map(field => ([`${field}`, this.tables[tableKey].fields[field].dbType]))
+      .map((field) => ([`${field}`, this.tables[tableKey].fields[field].dbType]))
       .reduce((columns, item) => {
         const [key, field] = item;
         columns[key] = field;
@@ -656,7 +656,7 @@ class Database {
    *
    * @returns {Object} Database model.
    */
-  getFileModelName = filename => (
+  getFileModelName = (filename) => (
     this.fileToModel[filename]
   )
 
@@ -667,10 +667,10 @@ class Database {
    *
    * @returns {Array<Object>} Indexes.
    */
-  getTableIndexes = tableKey => (
+  getTableIndexes = (tableKey) => (
     Object.keys(this.tables[tableKey].fields)
-      .filter(field => this.tables[tableKey].fields[field].index)
-      .map(field => ({
+      .filter((field) => this.tables[tableKey].fields[field].index)
+      .map((field) => ({
         name: field,
         fields: [field],
       }))
@@ -683,7 +683,7 @@ class Database {
    *
    * @returns {Object} Table options for Sequelize.
    */
-  getTableDatabaseOptions = tableKey => ({
+  getTableDatabaseOptions = (tableKey) => ({
     ...this.commonTableOptions,
     indexes: this.getTableIndexes(tableKey),
   })
@@ -695,7 +695,7 @@ class Database {
    *
    * @returns {Object} Table configs.
    */
-  getTableConfigs = tableKey => (
+  getTableConfigs = (tableKey) => (
     this.tables[tableKey]
   )
 
@@ -721,7 +721,7 @@ class Database {
    *
    * @returns {Sequelize<Model>} Table model for queries
    */
-  getTableModel = tableKey => (
+  getTableModel = (tableKey) => (
     this.models[tableKey]
   );
 
@@ -777,7 +777,7 @@ class Database {
    *
    * @returns {void}
    */
-  createTempTables = async tableKeys => (
+  createTempTables = async (tableKeys) => (
     Promise
       .map(
         tableKeys,
@@ -811,7 +811,7 @@ class Database {
    *
    * @returns {Boolean} Exists or not.
    */
-  tableExists = async table => (
+  tableExists = async (table) => (
     this.database.getQueryInterface().describeTable(table)
       .then(() => true)
       .catch(returnFalse)
