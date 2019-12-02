@@ -3,7 +3,7 @@ import path from 'path';
 import request from 'request';
 import progress from 'cli-progress';
 import Promise from 'bluebird';
-import unzip from 'unzip';
+import unzip from 'unzipper';
 import readline from 'readline';
 import iconv from 'iconv-lite';
 

@@ -1,6 +1,6 @@
 {
   "name": "posti",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "Posti Basic Address auto-updater",
   "repository": "https://github.com/kirbo/posti",
   "author": "Kimmo Saari <kirbo@kirbo-designs.com>",
@@ -49,7 +49,7 @@
     "sequelize": "5.21.2",
     "sqlite3": "4.1.0",
     "tedious": "6.6.2",
-    "unzip": "0.1.11"
+    "unzipper": "0.10.5"
   },
   "devDependencies": {
     "@babel/cli": "7.7.4",
