@@ -91,7 +91,7 @@ describe('Posti', () => {
       expect(files[1].model).toBe('ZIPCODES');
       expect(files[2].model).toBe('ZIPCODE_CHANGES');
 
-      await posti.writeLatest(files.filter(f => f.model !== 'ZIPCODES').map(file => file.filename));
+      await posti.writeLatest(files.filter((f) => f.model !== 'ZIPCODES').map((file) => file.filename));
     });
   });
 
@@ -107,7 +107,7 @@ describe('Posti', () => {
           force: true,
         },
         argv: [],
-        exit: code => throwError(code),
+        exit: (code) => throwError(code),
       };
 
       const newFiles = await posti.getNewFiles(mockProcess);
@@ -120,7 +120,7 @@ describe('Posti', () => {
       await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODES']);
 
-      const file = files.find(f => f.model === 'ZIPCODES');
+      const file = files.find((f) => f.model === 'ZIPCODES');
 
       await posti.setNewFiles([file]);
       global.config.process.deleteOnComplete = true;
@@ -132,7 +132,7 @@ describe('Posti', () => {
       await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODES']);
 
-      const file = files.find(f => f.model === 'ZIPCODES');
+      const file = files.find((f) => f.model === 'ZIPCODES');
 
       await posti.setNewFiles([file]);
       global.config.process.deleteOnComplete = false;
@@ -146,7 +146,7 @@ describe('Posti', () => {
       await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODE_CHANGES']);
 
-      const file = files.find(f => f.model === 'ZIPCODE_CHANGES');
+      const file = files.find((f) => f.model === 'ZIPCODE_CHANGES');
 
       await posti.setNewFiles([file]);
       global.config.process.deleteOnComplete = false;
@@ -159,7 +159,7 @@ describe('Posti', () => {
       await posti.createCacheDir();
       await global.database.createTempTables(['ZIPCODE_CHANGES']);
 
-      const file = files.find(f => f.model === 'ZIPCODE_CHANGES');
+      const file = files.find((f) => f.model === 'ZIPCODE_CHANGES');
 
       await posti.setLatest();
       expect(await posti.processFile(file)).toBe(undefined);
@@ -175,7 +175,7 @@ describe('Posti', () => {
 
   describe('clean()', () => {
     test('should clean up', async () => {
-      const file = files.find(f => f.model === 'ZIPCODES');
+      const file = files.find((f) => f.model === 'ZIPCODES');
 
       posti.setFile(file);
       await posti.clean();

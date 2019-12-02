@@ -104,7 +104,7 @@ const findDatabaseConfig = (prefix = '', proc = process) => {
     returnConfigFile = customPath;
   } else if (args.length > 0) {
     const regex = /--config="?(.*)"?/;
-    const configArg = args.find(a => a.match(regex));
+    const configArg = args.find((a) => a.match(regex));
     if (configArg) {
       customPath = configArg.match(regex)[1].toString();
       returnConfigFile = customPath;

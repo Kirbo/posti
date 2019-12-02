@@ -32,7 +32,7 @@ global.postiConfig = postiConfig;
 
     if (newFiles.length) {
       await database.connect();
-      await database.createTempTables(newFiles.map(file => file.model));
+      await database.createTempTables(newFiles.map((file) => file.model));
       await posti.setNewFiles(newFiles);
       await posti.processFiles(files);
     } else {
