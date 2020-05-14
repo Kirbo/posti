@@ -5,6 +5,7 @@ stages:
   - install
   - test
   - build
+  - post build
   - publish
   - deploy
 
@@ -28,8 +29,17 @@ install:
       - node_modules
     expire_in: 1 day
   script:
-    - rm yarn.lock
     - yarn
+
+install production:
+  <<: *general
+  stage: install
+  artifacts:
+    paths:
+      - node_modules
+    expire_in: 1 day
+  script:
+    - yarn install --production
 
 lint:
   <<: *general
@@ -41,6 +51,7 @@ lint:
 
 mariadb:
   <<: *general
+  stage: test
   variables:
     # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
     MYSQL_DATABASE: POSTI
@@ -49,7 +60,6 @@ mariadb:
   services:
     - docker:stable-dind
     - linuxserver/mariadb
-  stage: test
   dependencies:
     - install
   artifacts:
@@ -63,6 +73,7 @@ mariadb:
 
 postgres:
   <<: *general
+  stage: test
   variables:
     # Configure mysql environment variables (https://hub.docker.com/_/postgres#environment-variables)
     POSTGRES_DB: POSTI
@@ -71,7 +82,6 @@ postgres:
   services:
     - docker:stable-dind
     - postgres:latest
-  stage: test
   dependencies:
     - install
   artifacts:
@@ -85,14 +95,6 @@ postgres:
 
 build:
   <<: *general
-  variables:
-    # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
-    MYSQL_DATABASE: POSTI
-    MYSQL_USER: POSTI
-    MYSQL_PASSWORD: POSTI
-  services:
-    - docker:stable-dind
-    - linuxserver/mariadb
   stage: build
   dependencies:
     - install
@@ -102,6 +104,22 @@ build:
     expire_in: 1 day
   script:
     - yarn build
+
+test:
+  <<: *general
+  stage: post build
+  variables:
+    # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
+    MYSQL_DATABASE: POSTI
+    MYSQL_USER: POSTI
+    MYSQL_PASSWORD: POSTI
+  services:
+    - docker:stable-dind
+    - linuxserver/mariadb
+  dependencies:
+    - install production
+    - build
+  script:
     - mkdir ~/.posti
     - cp test/mariadb.config.js ~/.posti/config.js
     - ./dist/posti.js && exit $?

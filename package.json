@@ -1,6 +1,6 @@
 {
   "name": "posti",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "description": "Posti Basic Address auto-updater",
   "repository": "https://github.com/kirbo/posti",
   "author": "Kimmo Saari <kirbo@kirbo-designs.com>",
@@ -39,6 +39,7 @@
     "bluebird": "3.7.2",
     "cli-progress": "3.8.2",
     "colors": "1.4.0",
+    "core-js": "3.6.5",
     "fs-extra": "9.0.0",
     "graceful-fs": "4.2.4",
     "iconv-lite": "0.5.1",
