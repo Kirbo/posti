@@ -5,7 +5,7 @@ stages:
   - install
   - test
   - build
-  - postBuild
+  - post build
   - publish
   - deploy
 
@@ -107,9 +107,9 @@ build:
   script:
     - yarn build
 
-post build:
+test:
   <<: *general
-  stage: postBuild
+  stage: post build
   variables:
     # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
     MYSQL_DATABASE: POSTI
