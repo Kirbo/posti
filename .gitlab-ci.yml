@@ -102,6 +102,7 @@ build:
     expire_in: 1 day
   script:
     - yarn build
+    - mkdir ~/.posti
     - cp test/mariadb.config.js ~/.posti/config.js
     - ./dist/posti.js && exit $?
 
