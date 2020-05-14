@@ -85,6 +85,14 @@ postgres:
 
 build:
   <<: *general
+  variables:
+    # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
+    MYSQL_DATABASE: POSTI
+    MYSQL_USER: POSTI
+    MYSQL_PASSWORD: POSTI
+  services:
+    - docker:stable-dind
+    - linuxserver/mariadb
   stage: build
   dependencies:
     - install
@@ -94,7 +102,7 @@ build:
     expire_in: 1 day
   script:
     - yarn build
-    - echo "${posti_config}" > posti.config.js
+    - cp test/mariadb.config.js ~/.posti/config.js
     - ./dist/posti.js && exit $?
 
 # Run the jobs below only for `release` branch.
