@@ -10,7 +10,7 @@
     "start": "babel-node src/posti.js",
     "force": "cross-env force=true babel-node src/posti.js",
     "lint": "eslint .",
-    "test": "yarn test:debug --silent",
+    "test": "yarn test:debug --silent --colors",
     "test:debug": "cross-env NODE_ENV=test jest --verbose --detectOpenHandles --forceExit",
     "prepush": "yarn lint && yarn test"
   },
