@@ -94,6 +94,7 @@ build:
     expire_in: 1 day
   script:
     - yarn build
+    - echo "${posti_config}" > posti.config.js
     - ./dist/posti.js && exit $?
 
 # Run the jobs below only for `release` branch.
