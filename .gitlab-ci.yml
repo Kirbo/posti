@@ -1,4 +1,4 @@
-image: kirbownz/node10-rsync-python-ssh
+image: kirbownz/node12-rsync-python-ssh
 
 ###### STAGES #################################################################
 stages:
