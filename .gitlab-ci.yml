@@ -53,6 +53,7 @@ lint:
 
 mariadb:
   <<: *general
+  stage: test
   variables:
     # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
     MYSQL_DATABASE: POSTI
@@ -61,7 +62,6 @@ mariadb:
   services:
     - docker:stable-dind
     - linuxserver/mariadb
-  stage: test
   dependencies:
     - install
   artifacts:
@@ -75,6 +75,7 @@ mariadb:
 
 postgres:
   <<: *general
+  stage: test
   variables:
     # Configure mysql environment variables (https://hub.docker.com/_/postgres#environment-variables)
     POSTGRES_DB: POSTI
@@ -83,7 +84,6 @@ postgres:
   services:
     - docker:stable-dind
     - postgres:latest
-  stage: test
   dependencies:
     - install
   artifacts:
@@ -109,6 +109,7 @@ build:
 
 post build:
   <<: *general
+  stage: postBuild
   variables:
     # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
     MYSQL_DATABASE: POSTI
@@ -117,7 +118,6 @@ post build:
   services:
     - docker:stable-dind
     - linuxserver/mariadb
-  stage: build
   dependencies:
     - install production
   script:
