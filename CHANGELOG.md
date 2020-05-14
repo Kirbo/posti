@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Updated the dependencies.
+- Updated to Node 12
 
 
 ## [3.4.0] - 2019-12-02
