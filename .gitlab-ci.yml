@@ -5,6 +5,7 @@ stages:
   - install
   - test
   - build
+  - postBuild
   - publish
   - deploy
 
@@ -30,6 +31,17 @@ install:
   script:
     - rm yarn.lock
     - yarn
+
+install production:
+  <<: *general
+  stage: install
+  artifacts:
+    paths:
+      - node_modules
+    expire_in: 1 day
+  script:
+    - rm yarn.lock
+    - yarn install --production
 
 lint:
   <<: *general
@@ -85,6 +97,18 @@ postgres:
 
 build:
   <<: *general
+  stage: build
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1 day
+  script:
+    - yarn build
+
+post build:
+  <<: *general
   variables:
     # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
     MYSQL_DATABASE: POSTI
@@ -95,16 +119,10 @@ build:
     - linuxserver/mariadb
   stage: build
   dependencies:
-    - install
-  artifacts:
-    paths:
-      - dist
-    expire_in: 1 day
+    - install production
   script:
     - mkdir ~/.posti
     - cp test/mariadb.config.js ~/.posti/config.js
-    - yarn build
-    - rm -rf node_modules ; yarn install --production
     - ./dist/posti.js && exit $?
 
 # Run the jobs below only for `release` branch.
