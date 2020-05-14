@@ -29,7 +29,6 @@ install:
       - node_modules
     expire_in: 1 day
   script:
-    - rm yarn.lock
     - yarn
 
 install production:
@@ -40,7 +39,6 @@ install production:
       - node_modules
     expire_in: 1 day
   script:
-    - rm yarn.lock
     - yarn install --production
 
 lint:
@@ -120,6 +118,7 @@ test:
     - linuxserver/mariadb
   dependencies:
     - install production
+    - build
   script:
     - mkdir ~/.posti
     - cp test/mariadb.config.js ~/.posti/config.js
