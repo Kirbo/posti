@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [3.4.2] - 2020-05-14
+
+### Added
+- More tests in CI/CD.
+
+### Fixed
+- Broken binary.
+
+
 ## [3.4.1] - 2020-05-14
 
 ### Added
