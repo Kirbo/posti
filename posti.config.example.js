@@ -56,7 +56,10 @@ module.exports.default = {
       // limit each IP to 250 requests per windowMs
       max: 250,
       // message to display when requests exceeded the maximum allowed
-      message: { error: 'You have exceeded the maximum allowed requests (250) for the given window (5 minutes).' },
+      message: {
+        error:
+          'You have exceeded the maximum allowed requests (250) for the given window (5 minutes).',
+      },
     },
 
     // https://www.npmjs.com/package/express-slow-down#configuration

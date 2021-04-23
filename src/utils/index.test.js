@@ -30,13 +30,17 @@ describe('utils', () => {
 
   describe('logError()', () => {
     test('should console.error()', () => {
-      expect(() => { logError('It worked'); }).toConsoleError();
+      expect(() => {
+        logError('It worked');
+      }).toConsoleError();
     });
   });
 
   describe('throwError()', () => {
     test('should throw error', () => {
-      expect(() => { throwError('It worked'); }).toThrow(new Error('It worked'));
+      expect(() => {
+        throwError('It worked');
+      }).toThrow(new Error('It worked'));
     });
   });
 
@@ -48,13 +52,19 @@ describe('utils', () => {
 
   describe('sliceArrayIntoChunks()', () => {
     test('should slice array into 2 chunks', () => {
-      expect(sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 5)).toHaveLength(2);
+      expect(
+        sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 5)
+      ).toHaveLength(2);
     });
     test('should slice array into 4 chunks', () => {
-      expect(sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 3)).toHaveLength(4);
+      expect(
+        sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 3)
+      ).toHaveLength(4);
     });
     test('should slice array into 5 chunks', () => {
-      expect(sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 2)).toHaveLength(5);
+      expect(
+        sliceArrayIntoChunks([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], 2)
+      ).toHaveLength(5);
     });
   });
 
@@ -79,7 +89,10 @@ describe('utils', () => {
           argv: [...process.argv],
           exit: () => undefined,
         };
-        const testConfigFile = path.resolve(mockProcess.env.PWD, 'test_posti.config.js');
+        const testConfigFile = path.resolve(
+          mockProcess.env.PWD,
+          'test_posti.config.js'
+        );
         fs.writeFileSync(testConfigFile, 'test', 'utf8');
         expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
         fs.removeSync(testConfigFile);
@@ -114,7 +127,10 @@ describe('utils', () => {
           argv: [...process.argv],
           exit: () => {},
         };
-        const testConfigFile = path.resolve(mockProcess.env.PWD, `test_posti.config.${mockProcess.env.NODE_ENV}.js`);
+        const testConfigFile = path.resolve(
+          mockProcess.env.PWD,
+          `test_posti.config.${mockProcess.env.NODE_ENV}.js`
+        );
         fs.writeFileSync(testConfigFile, 'test', 'utf8');
         expect(findDatabaseConfig('test_', mockProcess)).toBe(testConfigFile);
         fs.removeSync(testConfigFile);
@@ -161,11 +177,7 @@ describe('utils', () => {
           env: {
             PWD: process.env.PWD,
           },
-          argv: [
-            process.argv[0],
-            process.argv[1],
-            `--testing=${config}`,
-          ],
+          argv: [process.argv[0], process.argv[1], `--testing=${config}`],
           exit: () => undefined,
         };
         expect(findDatabaseConfig('test_', mockProcess)).toBe(undefined);
@@ -179,11 +191,7 @@ describe('utils', () => {
           env: {
             PWD: process.env.PWD,
           },
-          argv: [
-            process.argv[0],
-            process.argv[1],
-            `--config=${config}`,
-          ],
+          argv: [process.argv[0], process.argv[1], `--config=${config}`],
           exit: () => undefined,
         };
         const testConfigFile = homeConfig;
