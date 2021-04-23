@@ -1,11 +1,21 @@
 version: "3"
 
 services:
-  db:
+  postgres:
     image: postgres
+    container_name: postgres
     environment:
       - POSTGRES_USER=POSTI
       - POSTGRES_PASSWORD=POSTI
       - POSTGRES_DB=POSTI
     ports:
       - "5432:5432"
+  linuxserver-mariadb:
+    image: linuxserver/mariadb
+    container_name: linuxserver-mariadb
+    environment:
+      MYSQL_DATABASE: POSTI
+      MYSQL_USER: POSTI
+      MYSQL_PASSWORD: POSTI
+    ports:
+      - "3306:3306"
