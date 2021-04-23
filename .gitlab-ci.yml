@@ -105,7 +105,7 @@ build:
   script:
     - yarn build
 
-test:
+test mariadb:
   <<: *general
   stage: post build
   variables:
@@ -122,6 +122,25 @@ test:
   script:
     - mkdir ~/.posti
     - cp test/mariadb.config.js ~/.posti/config.js
+    - ./dist/posti.js && exit $?
+
+test postgres:
+  <<: *general
+  stage: post build
+  variables:
+    # Configure mysql environment variables (https://hub.docker.com/_/postgres#environment-variables)
+    POSTGRES_DB: POSTI
+    POSTGRES_USER: POSTI
+    POSTGRES_PASSWORD: POSTI
+  services:
+    - docker:stable-dind
+    - postgres:latest
+  dependencies:
+    - install production
+    - build
+  script:
+    - mkdir ~/.posti
+    - cp test/postgresql.config.js ~/.posti/config.js
     - ./dist/posti.js && exit $?
 
 # Run the jobs below only for `release` branch.
