@@ -38,7 +38,6 @@ const logError = (error) => {
   console.error(`${_colors.red('!!!')} ${error} ${_colors.red('!!!')}`);
 };
 
-
 /**
  * Throw error.
  *
@@ -95,7 +94,10 @@ const findDatabaseConfig = (prefix = '', proc = process) => {
 
   const BINARY_NAME = Object.keys(packageJSON.bin)[0];
 
-  const projectNodeEnvConfig = path.resolve(proc.env.PWD, `${prefix}posti.config.${proc.env.NODE_ENV}.js`);
+  const projectNodeEnvConfig = path.resolve(
+    proc.env.PWD,
+    `${prefix}posti.config.${proc.env.NODE_ENV}.js`
+  );
   const projectConfig = path.resolve(proc.env.PWD, `${prefix}posti.config.js`);
   const homeConfig = path.resolve(os.homedir(), `.posti/${prefix}config.js`);
 
@@ -137,7 +139,9 @@ const findDatabaseConfig = (prefix = '', proc = process) => {
     console.error(`  ${projectConfig}`);
     console.error(`  ${homeConfig}`);
     console.error();
-    console.error(_colors.grey('..or define the path with one of the following ways:'));
+    console.error(
+      _colors.grey('..or define the path with one of the following ways:')
+    );
     console.error(`    ${BINARY_NAME} --config=/path/to/config.js`);
     console.error(`    config=/path/to/config.js ${BINARY_NAME}`);
 
@@ -161,16 +165,16 @@ const millisecondsToTime = (duration) => {
   if (duration >= 1000) {
     seconds = parseInt((duration / 1000) % 60, 10);
   }
-  if (duration >= (60 * 1000)) {
+  if (duration >= 60 * 1000) {
     minutes = parseInt((duration / (1000 * 60)) % 60, 10);
   }
-  if (duration >= (60 * 60 * 1000)) {
+  if (duration >= 60 * 60 * 1000) {
     hours = parseInt((duration / (1000 * 60 * 60)) % 24, 10);
   }
 
-  hours = (hours < 10) ? `0${hours}` : hours;
-  minutes = (minutes < 10) ? `0${minutes}` : minutes;
-  seconds = (seconds < 10) ? `0${seconds}` : seconds;
+  hours = hours < 10 ? `0${hours}` : hours;
+  minutes = minutes < 10 ? `0${minutes}` : minutes;
+  seconds = seconds < 10 ? `0${seconds}` : seconds;
   if (milliseconds < 10) {
     milliseconds = `00${milliseconds}`;
   } else if (milliseconds < 100) {
@@ -185,9 +189,7 @@ const millisecondsToTime = (duration) => {
  *
  * @returns {false} False.
  */
-const returnFalse = () => (
-  false
-);
+const returnFalse = () => false;
 
 export {
   logBlock,

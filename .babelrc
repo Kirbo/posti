@@ -6,6 +6,7 @@
         "targets": {
           "node": "current"
         },
+        "useBuiltIns": "usage",
         "corejs": 3
       }
     ]
@@ -32,7 +33,7 @@
             "corejs": 3
           }
         ],
-        ["minify",{
+        ["minify", {
           "mangle": false
         }]
       ],

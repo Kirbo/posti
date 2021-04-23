@@ -4,10 +4,7 @@ import path from 'path';
 import os from 'os';
 import fs from 'fs-extra';
 
-import {
-  throwError,
-  findDatabaseConfig,
-} from '../utils';
+import { throwError, findDatabaseConfig } from '../utils';
 
 import Posti from './Posti';
 import Sequelize from './Sequelize';
@@ -72,7 +69,9 @@ describe('Posti', () => {
 
   describe('setNewFiles()', () => {
     test('should set new files', async () => {
-      expect(await posti.setNewFiles(['test', 'testing', 'it works'])).toBe(undefined);
+      expect(await posti.setNewFiles(['test', 'testing', 'it works'])).toBe(
+        undefined
+      );
     });
   });
 
@@ -91,7 +90,9 @@ describe('Posti', () => {
       expect(files[1].model).toBe('ZIPCODES');
       expect(files[2].model).toBe('ZIPCODE_CHANGES');
 
-      await posti.writeLatest(files.filter((f) => f.model !== 'ZIPCODES').map((file) => file.filename));
+      await posti.writeLatest(
+        files.filter((f) => f.model !== 'ZIPCODES').map((file) => file.filename)
+      );
     });
   });
 
@@ -181,7 +182,9 @@ describe('Posti', () => {
       await posti.clean();
 
       const tableConfigs = global.database.getTableConfigs(file.model);
-      const oldTable = await global.database.dropTable(`${tableConfigs.nameFinished}_old`);
+      const oldTable = await global.database.dropTable(
+        `${tableConfigs.nameFinished}_old`
+      );
 
       expect(await global.database.tableExists(oldTable)).toBe(false);
     });
@@ -201,12 +204,24 @@ describe('Posti', () => {
 
   describe('allFinished()', () => {
     test('should write latest files', async () => {
-      await global.database.dropTable(global.database.getTableName('ADDRESSES').nameProcessing);
-      await global.database.dropTable(global.database.getTableName('ADDRESSES').nameFinished);
-      await global.database.dropTable(global.database.getTableName('ZIPCODES').nameProcessing);
-      await global.database.dropTable(global.database.getTableName('ZIPCODES').nameFinished);
-      await global.database.dropTable(global.database.getTableName('ZIPCODE_CHANGES').nameProcessing);
-      await global.database.dropTable(global.database.getTableName('ZIPCODE_CHANGES').nameFinished);
+      await global.database.dropTable(
+        global.database.getTableName('ADDRESSES').nameProcessing
+      );
+      await global.database.dropTable(
+        global.database.getTableName('ADDRESSES').nameFinished
+      );
+      await global.database.dropTable(
+        global.database.getTableName('ZIPCODES').nameProcessing
+      );
+      await global.database.dropTable(
+        global.database.getTableName('ZIPCODES').nameFinished
+      );
+      await global.database.dropTable(
+        global.database.getTableName('ZIPCODE_CHANGES').nameProcessing
+      );
+      await global.database.dropTable(
+        global.database.getTableName('ZIPCODE_CHANGES').nameFinished
+      );
 
       await posti.allFinished();
       global.config.process.deleteOnComplete = true;
