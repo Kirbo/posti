@@ -1,12 +1,7 @@
 import Promise from 'bluebird';
 import Sequelize from 'sequelize';
 
-import {
-  logBlock,
-  logStep,
-  logError,
-  returnFalse,
-} from '../utils';
+import { logBlock, logStep, logError, returnFalse } from '../utils';
 
 /**
  * Database
@@ -322,7 +317,8 @@ class Database {
           },
           typeCode: {
             comment: 'Type code',
-            extraComment: '1 = Normal postcode\n2 = PO Box postcode\n3 = Corporate postal code\n4 = Compilation postcode\n5 = Reply Mail postcode\n6 = SmartPOST (Parcel machine)\n7 = Pick-up Point postcode\n8 = Technical postcode', // eslint-disable-line
+            extraComment:
+              "1 = Normal postcode\n2 = PO Box postcode\n3 = Corporate postal code\n4 = Compilation postcode\n5 = Reply Mail postcode\n6 = SmartPOST (Parcel machine)\n7 = Pick-up Point postcode\n8 = Technical postcode", // eslint-disable-line
             start: 111,
             length: 1,
             type: 'integer',
@@ -379,7 +375,8 @@ class Database {
           },
           municipalityLanguage: {
             comment: 'Municipality language distribution code',
-            extraComment: '1 = Finnish\n2 = Bilingual\n3 = Bilingual\n4 = Swedish',
+            extraComment:
+              '1 = Finnish\n2 = Bilingual\n3 = Bilingual\n4 = Swedish',
             start: 220,
             length: 1,
             type: 'integer',
@@ -393,7 +390,8 @@ class Database {
         graphqlQuery: 'PostalCodeChange',
         nameProcessing: `${global.config.tablePrefix}temp_${global.config.tables.postalcode_changes.name}`,
         nameFinished: `${global.config.tablePrefix}${global.config.tables.postalcode_changes.name}`,
-        deleteOnceComplete: global.config.tables.postalcode_changes.useTempTable,
+        deleteOnceComplete:
+          global.config.tables.postalcode_changes.useTempTable,
         fields: {
           id: {
             type: 'integer',
@@ -590,7 +588,8 @@ class Database {
           },
           eventCode: {
             comment: 'Event code',
-            extraComment: '1 = Change of name\n2 = Postal code closed\n3 = New postal code\n4 = Postal code merged\n5 = Postal code reactivation\n6 = Postal code replaced by new postal code', // eslint-disable-line
+            extraComment:
+              "1 = Change of name\n2 = Postal code closed\n3 = New postal code\n4 = Postal code merged\n5 = Postal code reactivation\n6 = Postal code replaced by new postal code", // eslint-disable-line
             start: 452,
             length: 2,
             type: 'integer',
@@ -626,11 +625,13 @@ class Database {
   getTableName = (tableKey) => {
     const tableConfigs = this.tables[tableKey];
     return {
-      name: tableConfigs.deleteOnceComplete ? tableConfigs.nameProcessing : tableConfigs.nameFinished,
+      name: tableConfigs.deleteOnceComplete
+        ? tableConfigs.nameProcessing
+        : tableConfigs.nameFinished,
       nameProcessing: tableConfigs.nameProcessing,
       nameFinished: tableConfigs.nameFinished,
     };
-  }
+  };
 
   /**
    * Get table definitions.
@@ -639,15 +640,13 @@ class Database {
    *
    * @returns {Object} Table definitions.
    */
-  getTableDefinitions = (tableKey) => (
-    Object.keys(this.tables[tableKey].fields)
-      .map((field) => ([`${field}`, this.tables[tableKey].fields[field].dbType]))
-      .reduce((columns, item) => {
-        const [key, field] = item;
-        columns[key] = field;
-        return columns;
-      }, {})
-  )
+  getTableDefinitions = (tableKey) => Object.keys(this.tables[tableKey].fields)
+    .map((field) => [`${field}`, this.tables[tableKey].fields[field].dbType])
+    .reduce((columns, item) => {
+      const [key, field] = item;
+      columns[key] = field;
+      return columns;
+    }, {});
 
   /**
    * Get database model for file.
@@ -656,9 +655,7 @@ class Database {
    *
    * @returns {Object} Database model.
    */
-  getFileModelName = (filename) => (
-    this.fileToModel[filename]
-  )
+  getFileModelName = (filename) => this.fileToModel[filename];
 
   /**
    * Get table indexes.
@@ -667,14 +664,12 @@ class Database {
    *
    * @returns {Array<Object>} Indexes.
    */
-  getTableIndexes = (tableKey) => (
-    Object.keys(this.tables[tableKey].fields)
-      .filter((field) => this.tables[tableKey].fields[field].index)
-      .map((field) => ({
-        name: field,
-        fields: [field],
-      }))
-  )
+  getTableIndexes = (tableKey) => Object.keys(this.tables[tableKey].fields)
+    .filter((field) => this.tables[tableKey].fields[field].index)
+    .map((field) => ({
+      name: field,
+      fields: [field],
+    }));
 
   /**
    * Get table options.
@@ -686,7 +681,7 @@ class Database {
   getTableDatabaseOptions = (tableKey) => ({
     ...this.commonTableOptions,
     indexes: this.getTableIndexes(tableKey),
-  })
+  });
 
   /**
    * Get table configs.
@@ -695,9 +690,7 @@ class Database {
    *
    * @returns {Object} Table configs.
    */
-  getTableConfigs = (tableKey) => (
-    this.tables[tableKey]
-  )
+  getTableConfigs = (tableKey) => this.tables[tableKey];
 
   /**
    * Define table model for Sequelize.
@@ -712,7 +705,7 @@ class Database {
       this.getTableDefinitions(tableKey),
       this.getTableDatabaseOptions(tableKey)
     );
-  }
+  };
 
   /**
    * Return the database model.
@@ -721,9 +714,7 @@ class Database {
    *
    * @returns {Sequelize<Model>} Table model for queries
    */
-  getTableModel = (tableKey) => (
-    this.models[tableKey]
-  );
+  getTableModel = (tableKey) => this.models[tableKey];
 
   /**
    * Is database connected or not.
@@ -738,7 +729,7 @@ class Database {
       .authenticate()
       .then(() => true)
       .catch(returnFalse);
-  }
+  };
 
   /**
    * Connect database
@@ -746,7 +737,7 @@ class Database {
    * @returns {Sequelize} Connected Sequelize.
    */
   connect = async () => {
-    if (!await this.isConnected()) {
+    if (!(await this.isConnected())) {
       logBlock('Database connecting...');
       this.database = new Sequelize(
         global.config.database,
@@ -760,15 +751,13 @@ class Database {
         }
       );
 
-      return this.database
-        .authenticate()
-        .then(() => {
-          logStep('Connected');
-        });
+      return this.database.authenticate().then(() => {
+        logStep('Connected');
+      });
     } else {
       return true;
     }
-  }
+  };
 
   /**
    * Create temp tables.
@@ -777,32 +766,30 @@ class Database {
    *
    * @returns {void}
    */
-  createTempTables = async (tableKeys) => (
-    Promise
-      .map(
-        tableKeys,
-        async (tableKey) => {
-          const tableConfigs = this.getTableConfigs(tableKey);
-          await this.defineTable(tableKey);
+  createTempTables = async (tableKeys) => Promise.map(
+    tableKeys,
+    async (tableKey) => {
+      const tableConfigs = this.getTableConfigs(tableKey);
+      await this.defineTable(tableKey);
 
-          if (tableConfigs.deleteOnceComplete) {
-            if (!await this.tableExists(tableConfigs.nameProcessing)) {
-              logStep(`Creating temp table: ${tableConfigs.nameProcessing}`);
-              await this.getTableModel(tableKey).sync();
-            } else {
-              logStep(`Temp table '${tableConfigs.nameProcessing}' already exists`);
-            }
-          } else if (!await this.tableExists(tableConfigs.nameFinished)) {
-            logStep(`Creating table for: ${tableConfigs.nameFinished}`);
-            await this.getTableModel(tableKey).sync();
-          } else {
-            logStep(`Table '${tableConfigs.nameFinished}' already exists`);
-          }
-        },
-        { concurrency: 10 }
-      )
-      .catch(logError)
-  )
+      if (tableConfigs.deleteOnceComplete) {
+        if (!(await this.tableExists(tableConfigs.nameProcessing))) {
+          logStep(`Creating temp table: ${tableConfigs.nameProcessing}`);
+          await this.getTableModel(tableKey).sync();
+        } else {
+          logStep(
+            `Temp table '${tableConfigs.nameProcessing}' already exists`
+          );
+        }
+      } else if (!(await this.tableExists(tableConfigs.nameFinished))) {
+        logStep(`Creating table for: ${tableConfigs.nameFinished}`);
+        await this.getTableModel(tableKey).sync();
+      } else {
+        logStep(`Table '${tableConfigs.nameFinished}' already exists`);
+      }
+    },
+    { concurrency: 10 }
+  ).catch(logError);
 
   /**
    * Does table exist.
@@ -811,11 +798,11 @@ class Database {
    *
    * @returns {Boolean} Exists or not.
    */
-  tableExists = async (table) => (
-    this.database.getQueryInterface().describeTable(table)
-      .then(() => true)
-      .catch(returnFalse)
-  )
+  tableExists = async (table) => this.database
+    .getQueryInterface()
+    .describeTable(table)
+    .then(() => true)
+    .catch(returnFalse);
 
   /**
    * Rename table.
@@ -829,13 +816,15 @@ class Database {
     if (await this.tableExists(oldTableName)) {
       logStep(`Renaming table '${oldTableName}' -> '${newTableName}'`);
 
-      return this.database.getQueryInterface().renameTable(oldTableName, newTableName)
+      return this.database
+        .getQueryInterface()
+        .renameTable(oldTableName, newTableName)
         .then(() => true)
         .catch(returnFalse);
     }
 
     return null;
-  }
+  };
 
   /**
    * Drops table.
@@ -848,13 +837,15 @@ class Database {
     if (await this.tableExists(tableName)) {
       logStep(`Drop table '${tableName}'`);
 
-      return this.database.getQueryInterface().dropTable(tableName)
+      return this.database
+        .getQueryInterface()
+        .dropTable(tableName)
         .then(() => true)
         .catch(returnFalse);
     }
 
     return null;
-  }
+  };
 
   /**
    * Cast values for database.
@@ -881,7 +872,7 @@ class Database {
         return value;
       }
     }
-  }
+  };
 }
 
 export default Database;
