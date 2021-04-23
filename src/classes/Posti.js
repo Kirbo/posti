@@ -7,12 +7,7 @@ import unzip from 'unzipper';
 import readline from 'readline';
 import iconv from 'iconv-lite';
 
-import {
-  logBlock,
-  logStep,
-  throwError,
-  sliceArrayIntoChunks,
-} from '../utils';
+import { logBlock, logStep, throwError, sliceArrayIntoChunks } from '../utils';
 
 /**
  * Posti
@@ -36,7 +31,7 @@ class Posti {
    */
   setLatest = async () => {
     this.newFiles = await this.getLatest();
-  }
+  };
 
   /**
    * Get last processed files
@@ -45,11 +40,13 @@ class Posti {
    */
   getLatest = async () => {
     if (fs.existsSync(global.postiConfig.cache.latestFile)) {
-      const files = fs.readFileSync(global.postiConfig.cache.latestFile, 'utf8');
+      const files = fs.readFileSync(global.postiConfig.cache.latestFile, {
+        encoding: 'utf8',
+      });
       return files;
     }
     return [];
-  }
+  };
 
   /**
    * Get last processed files
@@ -59,8 +56,10 @@ class Posti {
    * @returns {void}
    */
   writeLatest = (files) => {
-    fs.writeFileSync(global.postiConfig.cache.latestFile, files, 'utf8');
-  }
+    fs.writeFileSync(global.postiConfig.cache.latestFile, files.toString(), {
+      encoding: 'utf8',
+    });
+  };
 
   /**
    * Check if there are any new files.
@@ -77,7 +76,7 @@ class Posti {
     }
 
     return this.files.filter((file) => !this.latest.includes(file.filename));
-  }
+  };
 
   /**
    * Set new files.
@@ -88,7 +87,7 @@ class Posti {
    */
   setNewFiles = async (files) => {
     this.newFiles = files;
-  }
+  };
 
   /**
    * Set file.
@@ -99,7 +98,7 @@ class Posti {
    */
   setFile = (file) => {
     this.file = file;
-  }
+  };
 
   /**
    * Create cache dir.
@@ -109,7 +108,7 @@ class Posti {
   createCacheDir = async () => {
     logBlock(`Using temp folder: ${global.postiConfig.cache.tempDir}`);
     fs.ensureDirSync(global.postiConfig.cache.tempDir);
-  }
+  };
 
   /**
    * Read zip file URLs from webpcode.
@@ -123,7 +122,9 @@ class Posti {
         this.files = body
           .match(/href="((.*)?webpcode\/[BAF|PCF|POM](.*)\.zip)"/g)
           .map((url) => {
-            const file = url.match(/href="((.*)?webpcode\/(((BAF|PCF|POM)(.*))\.zip))"/);
+            const file = url.match(
+              /href="((.*)?webpcode\/(((BAF|PCF|POM)(.*))\.zip))"/
+            );
             console.info(`    - ${file[1]}`);
             return {
               url: file[1],
@@ -136,7 +137,7 @@ class Posti {
         resolve(this.files);
       });
     });
-  }
+  };
 
   /**
    * Process files.
@@ -145,17 +146,13 @@ class Posti {
    *
    * @returns {void}
    */
-  processFiles = async (files) => (
-    Promise
-      .each(files, await this.processFile)
-      .then(() => {
-        if (global.config.process.deleteOnComplete) {
-          this.removeFiles();
-        }
+  processFiles = async (files) => Promise.each(files, await this.processFile).then(() => {
+    if (global.config.process.deleteOnComplete) {
+      this.removeFiles();
+    }
 
-        this.writeLatest(files.map((file) => file.filename));
-      })
-  )
+    this.writeLatest(files.map((file) => file.filename));
+  });
 
   /**
    * Start processing file.
@@ -180,70 +177,87 @@ class Posti {
     // This file has already been processed.
     logBlock(`Skipping file: ${file.filename}`);
     return this.clean();
-  }
+  };
 
   /**
    * Download file from posti.
    *
    * @returns {Promise} Promise
    */
-  downloadFile = async () => (
-    new Promise((resolve) => {
-      logStep('Downloading file');
-      const FILE_PATH = path.resolve(global.postiConfig.cache.tempDir, this.file.filename);
-      const PROGRESS = new progress.Bar(global.postiConfig.progressbar.downloadConfig);
-      const download = request(this.file.url);
-      download
-        .on('response', (response) => {
-          const size = parseInt(response.headers['content-length'], 10);
-          PROGRESS.start(size, 0);
+  downloadFile = async () => new Promise((resolve) => {
+    logStep('Downloading file');
+    const FILE_PATH = path.resolve(
+      global.postiConfig.cache.tempDir,
+      this.file.filename
+    );
+    const PROGRESS = new progress.Bar(
+      global.postiConfig.progressbar.downloadConfig
+    );
+    const download = request(this.file.url);
+    download
+      .on('response', (response) => {
+        const size = parseInt(response.headers['content-length'], 10);
+        PROGRESS.start(size, 0);
 
-          response
-            .on('data', (chunk) => {
-              PROGRESS.increment(chunk.length);
-            })
-            .on('end', () => {
-              resolve();
-            });
-        })
-        .pipe(fs.createWriteStream(FILE_PATH))
-        .on('error', throwError);
-    })
-  );
+        response
+          .on('data', (chunk) => {
+            PROGRESS.increment(chunk.length);
+          })
+          .on('end', () => {
+            resolve();
+          });
+      })
+      .pipe(fs.createWriteStream(FILE_PATH))
+      .on('error', throwError);
+  });
 
   /**
    * Unzip the downloaded file.
    *
    * @returns {Promise} Promise
    */
-  unzipFile = async () => (
-    new Promise((resolve) => {
-      logStep(`Unziping file: ${this.file.filename}`);
-      fs.createReadStream(path.resolve(global.postiConfig.cache.tempDir, this.file.filename))
-        .pipe(unzip.Extract({ path: path.resolve(global.postiConfig.cache.tempDir) }))
-        .on('close', () => {
-          resolve();
-        });
-    })
-  );
+  unzipFile = async () => new Promise((resolve) => {
+    logStep(`Unziping file: ${this.file.filename}`);
+    fs.createReadStream(
+      path.resolve(global.postiConfig.cache.tempDir, this.file.filename)
+    )
+      .pipe(
+        unzip.Extract({
+          path: path.resolve(global.postiConfig.cache.tempDir),
+        })
+      )
+      .on('close', () => {
+        resolve();
+      });
+  });
 
   /**
    * Convert the file from ISO-8859-1 into UTF-8.
    *
    * @returns {Promise} Promise
    */
-  convertFile = async () => (
-    new Promise((resolve) => {
-      logStep('Converting file from ISO-8859-1 -> UTF-8');
-      fs.createReadStream(path.resolve(global.postiConfig.cache.tempDir, `${this.file.extensionless}.dat`))
-        .pipe(iconv.decodeStream('latin1'))
-        .pipe(iconv.encodeStream('utf8'))
-        .pipe(fs.createWriteStream(path.resolve(global.postiConfig.cache.tempDir, `${this.file.extensionless}_utf8.dat`)))
-        .on('close', () => {
-          resolve();
-        });
-    })
-  );
+  convertFile = async () => new Promise((resolve) => {
+    logStep('Converting file from ISO-8859-1 -> UTF-8');
+    fs.createReadStream(
+      path.resolve(
+        global.postiConfig.cache.tempDir,
+        `${this.file.extensionless}.dat`
+      )
+    )
+      .pipe(iconv.decodeStream('latin1'))
+      .pipe(iconv.encodeStream('utf8'))
+      .pipe(
+        fs.createWriteStream(
+          path.resolve(
+            global.postiConfig.cache.tempDir,
+            `${this.file.extensionless}_utf8.dat`
+          )
+        )
+      )
+      .on('close', () => {
+        resolve();
+      });
+  });
 
   /**
    * Parse the file and insert its contents into database.
@@ -253,12 +267,19 @@ class Posti {
   parseFile = async () => {
     const tableConfigs = global.database.getTableConfigs(this.file.model);
     if (tableConfigs) {
-      const oldTable = await global.database.tableExists(tableConfigs.nameFinished);
+      const oldTable = await global.database.tableExists(
+        tableConfigs.nameFinished
+      );
       return new Promise((resolve) => {
         const datFile = `${this.file.extensionless}_utf8.dat`;
         logStep(`Parsing file: ${datFile}`);
-        const PROGRESS = new progress.Bar(global.postiConfig.progressbar.insertConfig);
-        const FILE_PATH = path.resolve(global.postiConfig.cache.tempDir, datFile);
+        const PROGRESS = new progress.Bar(
+          global.postiConfig.progressbar.insertConfig
+        );
+        const FILE_PATH = path.resolve(
+          global.postiConfig.cache.tempDir,
+          datFile
+        );
         const databaseModel = global.database.getTableModel(this.file.model);
         const rows = [];
 
@@ -278,7 +299,7 @@ class Posti {
             const column = tableConfigs.fields[key];
             row[key] = null;
             if (column.start) {
-              const value = line.substr((column.start - 1), column.length).trim();
+              const value = line.substr(column.start - 1, column.length).trim();
               row[key] = global.database.castProperties(column.type, value);
             }
           });
@@ -293,12 +314,10 @@ class Posti {
          *
          * @returns {void}
          */
-        const insertChunk = (chunk) => (
-          databaseModel
-            .bulkCreate(chunk)
-            .then(() => PROGRESS.increment(chunk.length))
-            .catch(throwError)
-        );
+        const insertChunk = (chunk) => databaseModel
+          .bulkCreate(chunk)
+          .then(() => PROGRESS.increment(chunk.length))
+          .catch(throwError);
 
         readline
           .createInterface({
@@ -310,18 +329,29 @@ class Posti {
             rows.push(parseLine(line));
           })
           .on('close', () => {
-            logStep(`Inserting into temp table '${tableConfigs.nameProcessing}'`);
+            logStep(
+              `Inserting into temp table '${tableConfigs.nameProcessing}'`
+            );
             PROGRESS.start(rows.length, 0);
-            Promise
-              .map(sliceArrayIntoChunks(rows, global.config.process.chunkSize), insertChunk, { concurrency: global.config.process.concurrency })
+            Promise.map(
+              sliceArrayIntoChunks(rows, global.config.process.chunkSize),
+              insertChunk,
+              { concurrency: global.config.process.concurrency }
+            )
               .then(() => {
                 if (oldTable && tableConfigs.deleteOnceComplete) {
-                  return global.database.renameTable(tableConfigs.nameFinished, `${tableConfigs.nameFinished}_old`);
+                  return global.database.renameTable(
+                    tableConfigs.nameFinished,
+                    `${tableConfigs.nameFinished}_old`
+                  );
                 }
               })
               .then(() => {
                 if (tableConfigs.deleteOnceComplete) {
-                  return global.database.renameTable(tableConfigs.nameProcessing, tableConfigs.nameFinished);
+                  return global.database.renameTable(
+                    tableConfigs.nameProcessing,
+                    tableConfigs.nameFinished
+                  );
                 }
               })
               .then(() => {
@@ -330,7 +360,7 @@ class Posti {
           });
       });
     }
-  }
+  };
 
   /**
    * Clean after processing file.
@@ -342,14 +372,16 @@ class Posti {
   clean = async () => {
     const tableConfigs = global.database.getTableConfigs(this.file.model);
     if (tableConfigs) {
-      const oldTable = await global.database.tableExists(`${tableConfigs.nameFinished}_old`);
+      const oldTable = await global.database.tableExists(
+        `${tableConfigs.nameFinished}_old`
+      );
 
       if (oldTable && tableConfigs.deleteOnceComplete) {
         logStep('Cleaning up');
         return global.database.dropTable(`${tableConfigs.nameFinished}_old`);
       }
     }
-  }
+  };
 
   /**
    * Delete the temporary folder.
@@ -359,7 +391,7 @@ class Posti {
   removeFiles = () => {
     logBlock(`Removing temp folder ${global.postiConfig.cache.tempDir}`);
     fs.removeSync(global.postiConfig.cache.tempDir);
-  }
+  };
 
   /**
    * Things to do after everything is done.
@@ -371,7 +403,7 @@ class Posti {
       this.removeFiles();
     }
     this.writeLatest(this.files.map((file) => file.filename));
-  }
+  };
 }
 
 export default Posti;

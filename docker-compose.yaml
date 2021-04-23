@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=POSTI
+      - POSTGRES_PASSWORD=POSTI
+      - POSTGRES_DB=POSTI
+    ports:
+      - "5432:5432"
