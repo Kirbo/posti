@@ -1,195 +1,206 @@
-image: kirbownz/node12-rsync-python-ssh
+image: node:24-slim
 
-###### STAGES #################################################################
 stages:
+  - version
   - install
   - test
   - build
-  - post build
+  - integration
+  - release
   - publish
-  - deploy
-
-###### TEMPLATES ##############################################################
-.general: &general
-  tags:
-    - gitlab-org
-  variables:
-    GIT_STRATEGY: fetch
 
 variables:
-  # Docker in Docker variables
-  DOCKER_HOST: "tcp://docker:2375"
+  PNPM_HOME: /root/.local/share/pnpm
+  PATH: /root/.local/share/pnpm:$PATH
 
-###### JOBS ###################################################################
+.setup_pnpm: &setup_pnpm
+  before_script:
+    - corepack enable
+    - corepack install
+    - pnpm config set store-dir .pnpm-store
+
+# ==============================================================================
+# SCHEDULED PIPELINE: Dependency Audit
+# ==============================================================================
+
+audit:
+  stage: install
+  <<: *setup_pnpm
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm audit
+
+# ==============================================================================
+# MAIN PIPELINE
+# ==============================================================================
+
+# --- Version (dry-run semantic release) ---
+bump-version:
+  stage: version
+  image: registry.gitlab.com/go-semantic-release/semantic-release:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+  script:
+    - semantic-release --dry-run --allow-initial-development
+  artifacts:
+    paths:
+      - CHANGELOG.md
+      - .unreleased-version
+    expire_in: 1 day
+
+# --- Install Dependencies ---
 install:
-  <<: *general
   stage: install
+  <<: *setup_pnpm
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+  script:
+    - pnpm install --frozen-lockfile
   artifacts:
     paths:
       - node_modules
     expire_in: 1 day
-  script:
-    - yarn
-
-install production:
-  <<: *general
-  stage: install
-  artifacts:
+  cache:
+    key: pnpm-$CI_COMMIT_REF_SLUG
     paths:
-      - node_modules
-    expire_in: 1 day
-  script:
-    - yarn install --production
+      - .pnpm-store
 
+# --- Lint & Type Check ---
 lint:
-  <<: *general
   stage: test
-  dependencies:
-    - install
+  <<: *setup_pnpm
+  needs: [install]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   script:
-    - yarn lint
+    - pnpm lint
+    - pnpm typecheck
 
-mariadb:
-  <<: *general
+# --- Unit Tests ---
+unit-tests:
   stage: test
-  variables:
-    # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
-    MYSQL_DATABASE: POSTI
-    MYSQL_USER: POSTI
-    MYSQL_PASSWORD: POSTI
-  services:
-    - docker:stable-dind
-    - linuxserver/mariadb
-  dependencies:
-    - install
+  <<: *setup_pnpm
+  needs: [install]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+  script:
+    - pnpm test:unit
   artifacts:
     paths:
       - coverage
     expire_in: 1 month
-  script:
-    - mkdir ~/.posti
-    - cp test/mariadb.config.js ~/.posti/config.js
-    - yarn test --ci --coverage
 
-postgres:
-  <<: *general
-  stage: test
-  variables:
-    # Configure mysql environment variables (https://hub.docker.com/_/postgres#environment-variables)
-    POSTGRES_DB: POSTI
-    POSTGRES_USER: POSTI
-    POSTGRES_PASSWORD: POSTI
-  services:
-    - docker:stable-dind
-    - postgres:latest
-  dependencies:
-    - install
-  artifacts:
-    paths:
-      - coverage
-    expire_in: 1 month
-  script:
-    - mkdir ~/.posti
-    - cp test/postgresql.config.js ~/.posti/config.js
-    - yarn test --ci --coverage
-
+# --- Build (Compile TypeScript) ---
 build:
-  <<: *general
   stage: build
-  dependencies:
-    - install
+  <<: *setup_pnpm
+  needs: [install, unit-tests, lint]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+  script:
+    - pnpm build
   artifacts:
     paths:
       - dist
     expire_in: 1 day
-  script:
-    - yarn build
 
-test mariadb:
-  <<: *general
-  stage: post build
-  variables:
-    # Configure mysql environment variables (https://hub.docker.com/r/linuxserver/mariadb#parameters)
-    MYSQL_DATABASE: POSTI
-    MYSQL_USER: POSTI
-    MYSQL_PASSWORD: POSTI
+# --- Integration Tests ---
+.integration_base: &integration_base
+  stage: integration
+  <<: *setup_pnpm
+  needs: [install, build]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+  timeout: 30m
+
+integration-mysql:
+  <<: *integration_base
   services:
-    - docker:stable-dind
-    - linuxserver/mariadb
-  dependencies:
-    - install production
-    - build
-  script:
-    - mkdir ~/.posti
-    - cp test/mariadb.config.js ~/.posti/config.js
-    - ./dist/posti.js && exit $?
-
-test postgres:
-  <<: *general
-  stage: post build
+    - name: mysql:8
+      alias: mysql
   variables:
-    # Configure mysql environment variables (https://hub.docker.com/_/postgres#environment-variables)
-    POSTGRES_DB: POSTI
-    POSTGRES_USER: POSTI
-    POSTGRES_PASSWORD: POSTI
-  services:
-    - docker:stable-dind
-    - postgres:latest
-  dependencies:
-    - install production
-    - build
+    MYSQL_DATABASE: posti
+    MYSQL_USER: posti
+    MYSQL_PASSWORD: posti
+    MYSQL_ROOT_PASSWORD: root
+    POSTI_HOST: mysql
+    POSTI_PORT: "3306"
+    POSTI_USER: posti
+    POSTI_PASSWORD: posti
+    POSTI_DATABASE: posti
   script:
-    - mkdir ~/.posti
-    - cp test/postgresql.config.js ~/.posti/config.js
-    - ./dist/posti.js && exit $?
+    - pnpm vitest run test/integration/mysql.test.ts
 
-# Run the jobs below only for `release` branch.
-publish to npm:
-  <<: *general
+integration-mariadb:
+  <<: *integration_base
+  services:
+    - name: mariadb:11
+      alias: mariadb
+  variables:
+    MYSQL_DATABASE: posti
+    MYSQL_USER: posti
+    MYSQL_PASSWORD: posti
+    MYSQL_ROOT_PASSWORD: root
+    POSTI_HOST: mariadb
+    POSTI_PORT: "3306"
+    POSTI_USER: posti
+    POSTI_PASSWORD: posti
+    POSTI_DATABASE: posti
+  script:
+    - pnpm vitest run test/integration/mariadb.test.ts
+
+integration-postgresql:
+  <<: *integration_base
+  services:
+    - name: postgres:17
+      alias: postgres
+  variables:
+    POSTGRES_DB: posti
+    POSTGRES_USER: posti
+    POSTGRES_PASSWORD: posti
+    POSTI_HOST: postgres
+    POSTI_PORT: "5432"
+    POSTI_USER: posti
+    POSTI_PASSWORD: posti
+    POSTI_DATABASE: posti
+  script:
+    - pnpm vitest run test/integration/postgres.test.ts
+
+integration-sqlite:
+  <<: *integration_base
+  script:
+    - pnpm vitest run test/integration/sqlite.test.ts
+
+# --- GitLab Release ---
+release:
+  stage: release
+  image: registry.gitlab.com/go-semantic-release/semantic-release:latest
+  needs:
+    - bump-version
+    - integration-mysql
+    - integration-mariadb
+    - integration-postgresql
+    - integration-sqlite
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"'
+  script:
+    - semantic-release --allow-initial-development
+
+# --- Publish to npm ---
+publish-npm:
   stage: publish
-  only:
-    - release
-  dependencies:
-    - build
-  allow_failure: false
+  <<: *setup_pnpm
+  needs: [build, bump-version, release]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"'
   script:
-    - echo "${npmrc}" > ~/.npmrc
-    - echo "Publish version $(node -p -e "require('./package.json').version")"
-    - npm publish
-
-update pages:
-  <<: *general
-  stage: deploy
-  only:
-    - release
-  dependencies:
-    - mariadb
-  script:
-    - mkdir -p ~/.ssh
-    - echo "${ssh_key}" > ~/.ssh/id_rsa
-    - chmod 700 ~/.ssh
-    - chmod 600 ~/.ssh/id_rsa
-    - echo "${gitconfig}" > ~/.gitconfig
-    - ssh-keyscan -t rsa ${demo_host} >> ~/.ssh/known_hosts
-    - rsync coverage ${demo_user}@${demo_host}:${demo_path} --delete-after -r -v
-
-deploy to github:
-  <<: *general
-  stage: deploy
-  only:
-    - release
-  dependencies: []
-  script:
-    - mkdir -p ~/.ssh
-    - echo "${ssh_key}" > ~/.ssh/id_rsa
-    - chmod 700 ~/.ssh
-    - chmod 600 ~/.ssh/id_rsa
-    - echo "${ssh_config}" > ~/.ssh/config
-    - echo "${gitconfig}" > ~/.gitconfig
-    - ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-    - if [[ $(git remote | grep github) ]]; then git remote remove github; fi
-    - git remote add github git@github.com:kirbo/posti.git
-    - export PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-    - git push github HEAD:refs/heads/master
-    - git tag -a v${PACKAGE_VERSION} -m "Version ${PACKAGE_VERSION}"
-    - git push github v${PACKAGE_VERSION}
+    - |
+      if [ -f .unreleased-version ]; then
+        VERSION=$(cat .unreleased-version)
+        npm version "$VERSION" --no-git-tag-version
+        pnpm publish --access public --no-git-checks
+      else
+        echo "No unreleased version found, skipping publish"
+      fi

@@ -1,21 +1,35 @@
-version: "3"
-
 services:
-  postgres:
-    image: postgres
-    container_name: postgres
+  mysql:
+    image: mysql:8
     environment:
-      - POSTGRES_USER=POSTI
-      - POSTGRES_PASSWORD=POSTI
-      - POSTGRES_DB=POSTI
-    ports:
-      - "5432:5432"
-  linuxserver-mariadb:
-    image: linuxserver/mariadb
-    container_name: linuxserver-mariadb
-    environment:
-      MYSQL_DATABASE: POSTI
-      MYSQL_USER: POSTI
-      MYSQL_PASSWORD: POSTI
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: posti
+      MYSQL_USER: posti
+      MYSQL_PASSWORD: posti
     ports:
       - "3306:3306"
+    tmpfs:
+      - /var/lib/mysql
+
+  mariadb:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: posti
+      MYSQL_USER: posti
+      MYSQL_PASSWORD: posti
+    ports:
+      - "3307:3306"
+    tmpfs:
+      - /var/lib/mysql
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: posti
+      POSTGRES_USER: posti
+      POSTGRES_PASSWORD: posti
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
