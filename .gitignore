@@ -26,6 +26,9 @@ yarn.lock
 .idea/
 .vscode/
 
+# Claude Code (user-specific)
+.claude/settings.local.json
+
 # pnpm store (CI cache, may appear locally)
 .pnpm-store/
 
