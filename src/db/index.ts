@@ -20,7 +20,7 @@ interface PostgresConnection {
 export type DbConnection = SqliteConnection | MysqlConnection | PostgresConnection;
 
 export async function createConnection(config: {
-  dialect: "mysql" | "mariadb" | "postgres" | "sqlite";
+  dialect: "postgres" | "mysql" | "mariadb" | "sqlite";
   host?: string;
   port?: number;
   user?: string;

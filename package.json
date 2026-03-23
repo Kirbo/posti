@@ -1,7 +1,7 @@
 {
   "name": "posti",
   "version": "4.0.0",
-  "description": "Finnish postal data (BAF/PCF/POM) loader for MySQL, MariaDB, PostgreSQL, and SQLite",
+  "description": "Finnish postal data (BAF/PCF/POM) loader for PostgreSQL, MySQL, MariaDB, and SQLite",
   "type": "module",
   "engines": {
     "node": ">=20.11.0"
@@ -21,7 +21,7 @@
   "files": [
     "dist",
     "package.json",
-    "LICENSE.md"
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -45,9 +45,9 @@
     "finnish post",
     "postal codes",
     "addresses",
+    "postgresql",
     "mysql",
     "mariadb",
-    "postgresql",
     "sqlite",
     "cli"
   ],
@@ -71,7 +71,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/cli-progress": "^3.11.6",
     "@types/node": "^25.5.0",
-    "@types/pg": "^8.18.0",
+    "@types/pg": "^8.20.0",
     "@types/unzipper": "^0.10.11",
     "@vitest/coverage-v8": "^4.1.0",
     "tsx": "^4.21.0",

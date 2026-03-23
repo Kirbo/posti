@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const configSchema = z.object({
-  dialect: z.enum(["mysql", "mariadb", "postgres", "sqlite"]),
+  dialect: z.enum(["postgres", "mysql", "mariadb", "sqlite"]),
   host: z.string().optional(),
   port: z.number().int().min(1).max(65535).optional(),
   user: z.string().optional(),
