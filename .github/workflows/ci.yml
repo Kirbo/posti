@@ -1,0 +1,264 @@
+# CI and releases for posti (GitHub Actions on GitHub-hosted runners).
+#
+# check (toolchain, lint, typecheck, build, package) + audit + test (Node 22/24/26: unit and
+# SQLite tests) + integration (MySQL, MariaDB, PostgreSQL) → on master: version → release.
+# `release` STAGES the computed version on npmjs.org with npm trusted publishing (no token)
+# and creates the GitHub release + tag; the maintainer approves the staged version on
+# npmjs.com. docs/SECRETS.md has the trusted-publisher values.
+#
+# Every action is pinned by commit SHA (the tag in the comment), every service image by
+# digest. Bump them per .claude/skills/maintain.
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+    # A docs-only change runs nothing.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".claude/**"
+      - "LICENSE"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".claude/**"
+      - "LICENSE"
+  # Weekly: the checks, the tests and `pnpm audit` against new advisories. Never releases.
+  schedule:
+    - cron: "23 4 * * 1"
+  # Run by hand, e.g. to retry a release after fixing the npm trusted publisher.
+  workflow_dispatch:
+
+# Nothing but reading the repo, except where a job says otherwise (`release`).
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # A new push to a branch or pull request cancels its previous run; master runs to the end.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+env:
+  # mise installs ONLY what mise.lock names (exact versions, URLs and checksums): a pin that
+  # the lock lacks fails the job instead of being resolved and fetched.
+  MISE_LOCKED: "1"
+  # The mise binary itself, verified by jdx/mise-action against its signed release checksums.
+  MISE_VERSION: "2026.11.2"
+
+jobs:
+  # The toolchain from mise.lock (locked), a frozen pnpm install, package.json in step with
+  # mise.toml, an unchanged checkout, then every static check, the build and the package as
+  # consumers get it. dist/ goes to `release`.
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: ${{ env.MISE_VERSION }}
+      - run: mise ls --current
+      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/check-versions.sh
+      - run: git diff --exit-code
+      - run: pnpm lint
+      - run: pnpm lint:shell
+      - run: pnpm typecheck
+      - run: pnpm build
+      # Both pack through prepack (a fresh build, the same dist/): the file list, then the
+      # tarball contents, publint, attw and an installed smoke test (scripts/check-package.sh).
+      - run: pnpm pack --dry-run
+      - run: pnpm check:package
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  # Known vulnerabilities in the locked dependency tree.
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: ${{ env.MISE_VERSION }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit
+
+  # Unit tests and the SQLite integration tests on every supported Node (package.json
+  # engines.node: >=22.12): the latest 22.x and 24.x, and the 26.x mise.toml pins. pnpm comes
+  # from mise.lock; actions/setup-node puts the matrix Node first on PATH.
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22.23.4", "24.22.2", "26.13.0"]
+    name: test (node ${{ matrix.node }})
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: ${{ env.MISE_VERSION }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Node is the matrix version
+        run: test "$(node --version)" = "v${{ matrix.node }}"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:unit
+      - run: pnpm test:sqlite
+
+  # Each database's own integration test file against that database as a service container,
+  # on the development Node (mise.toml).
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dialect: mysql
+            image: mysql:8.4.13@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
+            port: 3306
+            health: mysqladmin ping -h 127.0.0.1 -uposti -pposti
+          - dialect: mariadb
+            image: mariadb:11.8.9@sha256:c4124d1afa875e47f2892edf26b482fa54f796e2f342d3717a04ca091a22a9bd
+            port: 3306
+            health: healthcheck.sh --connect --innodb_initialized
+          - dialect: postgres
+            image: postgres:17.11@sha256:748a18a54d3842d43bc156f0840d78029b8d349e0feca98c12b9c4ce3404a6b3
+            port: 5432
+            health: pg_isready -h 127.0.0.1 -U posti -d posti
+    name: integration (${{ matrix.dialect }})
+    services:
+      db:
+        image: ${{ matrix.image }}
+        # Both families' variables: each image reads its own and ignores the others.
+        env:
+          MYSQL_DATABASE: posti
+          MYSQL_USER: posti
+          MYSQL_PASSWORD: posti
+          MYSQL_ROOT_PASSWORD: root
+          POSTGRES_DB: posti
+          POSTGRES_USER: posti
+          POSTGRES_PASSWORD: posti
+        ports:
+          - ${{ matrix.port }}:${{ matrix.port }}
+        options: >-
+          --health-cmd "${{ matrix.health }}"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      POSTI_HOST: 127.0.0.1
+      POSTI_PORT: ${{ matrix.port }}
+      POSTI_USER: posti
+      POSTI_PASSWORD: posti
+      POSTI_DATABASE: posti
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: ${{ env.MISE_VERSION }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm vitest run test/integration/${{ matrix.dialect }}.test.ts
+
+  # The next SemVer version from the Conventional Commits since the last v* tag, and that
+  # release's notes (git-cliff: cliff.toml, scripts/next-version.sh). Empty when nothing is
+  # releasable. master only (push or a run by hand), never on a schedule.
+  version:
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.next.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # git-cliff needs the full history and the tags.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: ${{ env.MISE_VERSION }}
+      - id: next
+        run: |
+          VERSION="$(bash scripts/next-version.sh --notes RELEASE_NOTES.md)"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          if [ -n "${VERSION}" ]; then
+            echo "Next release: v${VERSION}"
+            cat RELEASE_NOTES.md
+          else
+            echo "No releasable commits since the last tag."
+            : > RELEASE_NOTES.md
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-notes
+          path: RELEASE_NOTES.md
+          retention-days: 7
+
+  # STAGES posti@VERSION on npmjs.org (`npm stage publish`), then creates the GitHub release
+  # and its vVERSION tag (scripts/release.ts). npm's trusted publisher for posti allows only
+  # staging: the version goes live when the maintainer approves it, with 2FA, in npmjs.com's
+  # "Staged Packages" tab. The version is stamped into package.json in this job only; nothing
+  # is committed back. Needs every check green and stages the `check` job's dist/.
+  #
+  # npm TRUSTED PUBLISHING, no token anywhere: the npm CLI (bundled with mise's Node 26,
+  # npm >= 11.5.1; release.ts checks) trades this job's OIDC ID token for a short-lived
+  # credential. npmjs.com trusts exactly: GitHub Actions, Kirbo/posti, workflow ci.yml,
+  # environment `release` (docs/SECRETS.md). Renaming this file or the environment breaks it.
+  #
+  # Safe to rerun: an existing GitHub release vVERSION means the version was staged (or
+  # published) already; a version already on npm is not staged again. A failed staging (e.g. a
+  # trusted publisher that does not match) fails the job, stages nothing and creates no tag
+  # or release.
+  release:
+    needs: [check, audit, test, integration, version]
+    if: needs.version.outputs.version != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: release
+    # Two quick pushes never stage the same computed version concurrently.
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: ${{ env.MISE_VERSION }}
+          # No cache in the job that holds publishing credentials.
+          cache: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-notes
+      - run: node scripts/release.ts
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          GITHUB_TOKEN: ${{ github.token }}

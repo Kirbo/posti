@@ -1,6 +1,8 @@
+# Local databases for the integration tests (README "Local Databases"). The images are the
+# ones CI's `integration` jobs use (.github/workflows/ci.yml), pinned by digest: bump both together.
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.4.13@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: posti
@@ -12,7 +14,7 @@ services:
       - /var/lib/mysql
 
   mariadb:
-    image: mariadb:11
+    image: mariadb:11.8.9@sha256:c4124d1afa875e47f2892edf26b482fa54f796e2f342d3717a04ca091a22a9bd
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: posti
@@ -24,7 +26,7 @@ services:
       - /var/lib/mysql
 
   postgres:
-    image: postgres:17
+    image: postgres:17.11@sha256:748a18a54d3842d43bc156f0840d78029b8d349e0feca98c12b9c4ce3404a6b3
     environment:
       POSTGRES_DB: posti
       POSTGRES_USER: posti

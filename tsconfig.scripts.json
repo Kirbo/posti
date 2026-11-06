@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  // Type-checks scripts/*.ts (`pnpm typecheck`) without emitting: CI runs them with Node's
+  // built-in type stripping, so they may use only erasable TypeScript syntax.
+  "compilerOptions": {
+    "target": "ES2024",
+    "lib": ["ES2024"],
+    "types": ["node"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["scripts/**/*.ts"]
+}

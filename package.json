@@ -1,6 +1,6 @@
 {
   "name": "posti",
-  "version": "4.0.0",
+  "version": "0.0.0-development",
   "description": "Finnish postal data (BAF/PCF/POM) loader for PostgreSQL, MySQL, MariaDB, and SQLite",
   "type": "module",
   "engines": {
@@ -20,26 +20,28 @@
     "posti": "./dist/cli.js"
   },
   "files": [
-    "dist",
-    "package.json",
-    "LICENSE"
+    "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "pnpm clean && tsc -p tsconfig.build.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "start": "tsx src/cli.ts",
     "dev": "tsx --watch src/cli.ts",
-    "lint": "biome check src/ test/",
-    "lint:fix": "biome check --write src/ test/",
-    "format": "biome format --write src/ test/",
-    "typecheck": "tsc --noEmit",
+    "lint": "biome check src/ test/ scripts/",
+    "lint:shell": "shellcheck scripts/*.sh",
+    "lint:fix": "biome check --write src/ test/ scripts/",
+    "format": "biome format --write src/ test/ scripts/",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.scripts.json",
     "test": "vitest run",
     "test:unit": "vitest run --dir test/unit",
     "test:integration": "vitest run --dir test/integration",
+    "test:sqlite": "vitest run test/integration/sqlite.test.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "pnpm build",
+    "check:package": "bash scripts/check-package.sh",
     "deps:check": "pnpm outdated && pnpm audit",
-    "deps:update": "pnpm update --latest && pnpm install"
+    "deps:update": "pnpm update --latest && pnpm install",
+    "prepack": "pnpm build"
   },
   "keywords": [
     "posti",
@@ -52,7 +54,14 @@
     "sqlite",
     "cli"
   ],
-  "repository": "https://github.com/kirbo/posti",
+  "homepage": "https://github.com/Kirbo/posti#readme",
+  "bugs": {
+    "url": "https://github.com/Kirbo/posti/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kirbo/posti.git"
+  },
   "author": "Kimmo Saari <kirbo@kirbo-designs.com>",
   "license": "MIT",
   "dependencies": {
@@ -68,6 +77,7 @@
     "pg": "^8.23.1"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@biomejs/biome": "2.6.5",
     "@types/better-sqlite3": "9.6.0",
     "@types/cli-progress": "3.11.6",
@@ -75,8 +85,13 @@
     "@types/pg": "8.23.1",
     "@types/unzipper": "0.10.11",
     "@vitest/coverage-v8": "5.1.0",
+    "publint": "0.3.25",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.1.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

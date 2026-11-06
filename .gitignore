@@ -32,6 +32,6 @@ yarn.lock
 # pnpm store (CI cache, may appear locally)
 .pnpm-store/
 
-# Temp
+# Temp; RELEASE_NOTES.md is CI's (the `version` job)
 *.tgz
-.unreleased-version
+RELEASE_NOTES.md

@@ -1,0 +1,76 @@
+# git-cliff configuration (https://git-cliff.org): the release notes, and with
+# scripts/next-version.sh the next SemVer version (tags v<version>; the 3.x tags
+# were made by semantic-release and count as they are).
+#
+# The notes format (the same as in the owner's other repos):
+#
+#   ## <version> (YYYY-MM-DD)
+#
+#   #### Breaking Changes
+#
+#   * **<scope>:** <subject> (<8-char-hash>)
+#   ```
+#   BREAKING CHANGE: <description>
+#   ```
+#
+#   #### Feature
+#
+#   * <subject> (<8-char-hash>)
+#
+# Section order: Breaking Changes, Feature, Bug Fixes, Reverts, Performance
+# Improvements, Documentation, Tests, Code Refactoring, Styles, Chores, Build, CI.
+# Breaking commits are rendered ONLY under "Breaking Changes" (filtered out of
+# their type section). The numeric HTML-comment prefixes only drive group sort
+# order; `striptags` removes them.
+
+[changelog]
+header = ""
+body = """
+{%- if version -%}
+## {{ version | trim_start_matches(pat="v") }} ({{ timestamp | date(format="%Y-%m-%d") }})
+{% else -%}
+## Unreleased
+{% endif -%}
+{% set breaking = commits | filter(attribute="breaking", value=true) -%}
+{%- if breaking | length > 0 %}
+#### Breaking Changes
+{% for commit in breaking %}
+* {% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message }} ({{ commit.id | truncate(length=8, end="") }})
+{%- if commit.breaking_description and commit.breaking_description != commit.message %}
+```
+BREAKING CHANGE: {{ commit.breaking_description }}
+```
+{%- endif %}
+{%- endfor %}
+{% endif -%}
+{% for group, commits in commits | filter(attribute="breaking", value=false) | group_by(attribute="group") %}
+#### {{ group | striptags | trim }}
+{% for commit in commits %}
+* {% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message }} ({{ commit.id | truncate(length=8, end="") }})
+{%- endfor %}
+{% endfor %}"""
+footer = ""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+filter_commits = false
+tag_pattern = "v[0-9]*"
+topo_order = false
+sort_commits = "newest"
+commit_parsers = [
+  { message = "^feat", group = "<!-- 00 -->Feature" },
+  { message = "^fix", group = "<!-- 01 -->Bug Fixes" },
+  { message = "^revert", group = "<!-- 02 -->Reverts" },
+  { message = "^perf", group = "<!-- 03 -->Performance Improvements" },
+  { message = "^docs", group = "<!-- 04 -->Documentation" },
+  { message = "^test", group = "<!-- 05 -->Tests" },
+  { message = "^refactor", group = "<!-- 06 -->Code Refactoring" },
+  { message = "^style", group = "<!-- 07 -->Styles" },
+  { message = "^chore", group = "<!-- 08 -->Chores" },
+  { message = "^build", group = "<!-- 09 -->Build" },
+  { message = "^ci", group = "<!-- 10 -->CI" },
+  { message = ".*", skip = true },
+]
