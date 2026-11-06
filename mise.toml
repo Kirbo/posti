@@ -1,0 +1,55 @@
+# Developer + CI toolchain (https://mise.jdx.dev): `mise install` provisions all of it.
+#
+# EVERY tool is pinned to an exact version, and mise.lock (committed) records each one's
+# download URL + checksum for every platform in `lockfile_platforms` below. CI installs in
+# LOCKED mode (MISE_LOCKED=1 in .github/workflows/ci.yml), so a tool, version or artifact the
+# lock does not name fails the job instead of being fetched. Bump a pin: edit it here, run
+# `mise lock`, commit both files (CI's `check` job fails a lock that disagrees).
+#
+# Release-age quarantine: no version younger than one day (`minimum_release_age` below for
+# mise; pnpm-workspace.yaml `minimumReleaseAge` for npm packages).
+min_version = "2026.9.9"
+
+[tools]
+# The development toolchain's Node: the LATEST LTS line, never Current. package.json
+# `engines.node` is the oldest Node the package supports (consumers); CI tests every supported
+# major (.github/workflows/ci.yml `test`), and @types/node follows the oldest one.
+node = "26.13.0"
+# Aqua backend (GitHub-release binary) on purpose: pnpm 12+ ships a native binary fetched by an
+# npm postinstall hook, and mise's npm: backend installs with --ignore-scripts, which leaves a
+# placeholder Node cannot run. package.json `packageManager` must name the same version
+# (`mise run check-versions`, also run by CI).
+"aqua:pnpm/pnpm" = "12.18.0"
+# Release notes + the next SemVer version (cliff.toml, scripts/next-version.sh).
+git-cliff = "2.14.2"
+jq = "1.8.2"
+# Lints scripts/*.sh (`pnpm lint:shell`).
+shellcheck = "0.11.0"
+
+[settings]
+lockfile = true
+lockfile_platforms = ["linux-x64", "linux-arm64", "macos-arm64", "windows-x64"]
+minimum_release_age = "1d"
+
+# Tasks: `mise run <task>` (list them with `mise tasks`). The pnpm scripts in package.json
+# are the primary entry points; these wrap the repo-level checks.
+[tasks.check-versions]
+description = "Fail when package.json packageManager / engines disagree with mise.toml"
+run = "bash scripts/check-versions.sh"
+
+[tasks.check]
+description = "What CI checks (without the MySQL/MariaDB/PostgreSQL integration tests): versions, lint, typecheck, unit + SQLite tests, package, audit"
+run = [
+  "bash scripts/check-versions.sh",
+  "pnpm lint",
+  "pnpm lint:shell",
+  "pnpm typecheck",
+  "pnpm test:unit",
+  "pnpm test:sqlite",
+  "pnpm check:package",
+  "pnpm audit",
+]
+
+[tasks.next-version]
+description = "Preview the next release: its notes on stderr, the version (empty if nothing to release) on stdout"
+run = "bash scripts/next-version.sh --notes /dev/stderr"

@@ -1,0 +1,14 @@
+# pnpm settings (pnpm 10+ reads them here, not from .npmrc or package.json).
+#
+# Release-age quarantine: never resolve a package version published less than a day ago
+# (minutes). Same rule as mise.toml `minimum_release_age` for the toolchain.
+minimumReleaseAge: 1440
+
+# Refuse to install on a Node outside package.json `engines`.
+engineStrict: true
+
+# Dependencies whose install scripts may run (pnpm 12 fails the install on any other that has
+# one): esbuild (through tsx) checks its platform binary. better-sqlite3 (an optional
+# dependency) needs none: since 13.x its package ships N-API prebuilds for every platform.
+allowBuilds:
+  esbuild: true

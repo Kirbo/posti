@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=20.11.0"
   },
-  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be",
+  "packageManager": "pnpm@12.18.0+sha512.9d7882d5dc82147ecfc4e062aa34834e0ad0296710a1837a1115ae012127d36b7109e321ac1598a1dd0a65597681b1e99917e12ed0d749eae91187943363beb3",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -56,32 +56,26 @@
   "license": "MIT",
   "dependencies": {
     "cli-progress": "^3.12.0",
-    "iconv-lite": "^0.7.2",
+    "iconv-lite": "^0.7.3",
     "picocolors": "^1.1.1",
-    "unzipper": "^0.12.3",
-    "zod": "^4.3.6"
+    "unzipper": "^0.12.5",
+    "zod": "^4.6.7"
   },
   "optionalDependencies": {
-    "better-sqlite3": "^12.8.0",
-    "mysql2": "^3.20.0",
-    "pg": "^8.20.0"
+    "better-sqlite3": "^13.0.3",
+    "mysql2": "^3.24.6",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.8",
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/cli-progress": "^3.11.6",
-    "@types/node": "^25.5.0",
-    "@types/pg": "^8.20.0",
-    "@types/unzipper": "^0.10.11",
-    "@vitest/coverage-v8": "^4.1.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "esbuild"
-    ]
+    "@biomejs/biome": "2.6.5",
+    "@types/better-sqlite3": "9.6.0",
+    "@types/cli-progress": "3.11.6",
+    "@types/node": "26.6.6",
+    "@types/pg": "8.23.1",
+    "@types/unzipper": "0.10.11",
+    "@vitest/coverage-v8": "5.1.0",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.1.0"
   }
 }
