@@ -6,9 +6,8 @@ Supports **PostgreSQL**, **MySQL**, **MariaDB**, and **SQLite**.
 
 ## Requirements
 
-- Node.js >= 20.11.0 (latest 3 LTS versions: 20, 22, 24)
-- pnpm
-- Development requires Node.js 24 (current LTS)
+- Node.js >= 22.12 (the maintained LTS lines: 22, 24 and 26; CI tests all three)
+- One of PostgreSQL, MySQL, MariaDB or SQLite (the database driver is an optional dependency)
 
 ## Installation
 

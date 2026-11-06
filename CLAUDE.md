@@ -26,7 +26,7 @@ Finnish postal data loader (BAF/PCF/POM) — TypeScript, pnpm, Biome, Vitest.
 - Dynamic `import()` results must be validated at runtime (`typeof mod === "object"`, `"default" in mod`, etc.) — never bare `as` cast.
 - DB driver return values must be validated at runtime — use type guard helpers, not bare `as` casts.
 - Numeric schema fields that must be positive must use `.positive()` (or `.min(1)`). Numeric schema fields that must be whole numbers must also use `.int()`. Utility functions accepting sizes/counts must guard against non-positive values.
-- Code targeting the build output (`tsconfig.build.json`) must only use APIs available in the minimum `engines.node` version. Use `import.meta.url` (not `import.meta.dirname`) for Node 20 compat.
+- Code targeting the build output (`tsconfig.build.json`) must only use APIs available in the minimum `engines.node` version (`>=22.12`, the oldest maintained Node LTS; `@types/node` stays on that major so the types never offer a newer API).
 - `lint:fix` script scope must match `lint` script scope. Both must cover `src/` and `test/`.
 - CI must use `corepack install` (not `corepack prepare pnpm@latest`) to respect the `packageManager` field.
 - CI integration tests must run dialect-specific test files (not a shared test) so each database is actually exercised.
