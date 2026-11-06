@@ -9,10 +9,10 @@ Read and follow `.claude/rules/pre-flight.md`.
 ## Before considering any code change complete
 
 1. Run `pnpm lint` — fix any findings.
-2. If `src/`, `test/`, `package.json`, `tsconfig*.json`, `vitest.config.ts`, or `biome.json` changed:
+2. If `src/`, `test/`, `scripts/`, `package.json`, `tsconfig*.json`, `vitest.config.ts`, or `biome.json` changed:
    - Run `pnpm typecheck` — fix any type errors.
    - Run `pnpm test` — all tests must pass.
-3. Skip typecheck/test for documentation-only or config-only changes (`.md` files, `.claude/`, `.gitlab-ci.yml`, `.gitignore`, `.editorconfig`, `LICENSE`).
+3. Skip typecheck/test for documentation-only or config-only changes (`.md` files, `.claude/`, `.github/`, `.gitignore`, `.editorconfig`, `LICENSE`).
 
 ## When CLI flags, commands, or config options change
 
@@ -52,10 +52,10 @@ Do not wait to be asked. If the user can see it or use it, it belongs in README.
 
 ## When updating dependencies
 
-- Run `pnpm deps:update` to update all dependencies.
+- Follow `.claude/skills/maintain/SKILL.md` (Phase 1): devDependencies pinned exactly (`pnpm add -D -E`), nothing younger than a day (`pnpm-workspace.yaml` `minimumReleaseAge`), `@types/node` on the oldest supported Node major.
 - Always re-run `pnpm lint`, `pnpm typecheck`, and `pnpm test` after updating.
 - Watch for breaking changes (e.g., Zod v3 -> v4 nested defaults behavior).
-- Update `packageManager` field via `corepack use pnpm@latest` if pnpm itself is outdated.
+- pnpm itself comes from mise: bump `"aqua:pnpm/pnpm"` in `mise.toml`, run `mise lock`, and set package.json `packageManager` to the same version with its sha512 (`bash scripts/check-versions.sh` must pass).
 
 ## When modifying integration tests
 

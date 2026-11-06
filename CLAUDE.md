@@ -2,7 +2,7 @@
 
 ## Project
 
-Finnish postal data loader (BAF/PCF/POM) — TypeScript, pnpm, Biome, Vitest.
+Finnish postal data loader (BAF/PCF/POM) — TypeScript, pnpm, Biome, Vitest. Toolchain through mise (`mise.toml` exact pins + committed `mise.lock`); CI on GitHub Actions (`.github/workflows/ci.yml`); releases by git-cliff, staged on npm with trusted publishing (`docs/SECRETS.md`).
 
 ## Rules
 
@@ -10,14 +10,14 @@ Finnish postal data loader (BAF/PCF/POM) — TypeScript, pnpm, Biome, Vitest.
 - Keep `strict: true` and `noUncheckedIndexedAccess: true`.
 - Biome for linting/formatting. No ESLint or Prettier. Double quotes everywhere (including `.js` config files and README code blocks).
 - No `console.log` in library code — use `src/utils/logger.ts`.
-- Always use `pnpm`. Never `npm` or `yarn`.
+- Always use `pnpm`. Never `npm` or `yarn`. The one exception: `scripts/release.ts` runs `npm stage publish` (pnpm cannot stage a release or do npm's OIDC exchange).
 - Always use `Number.parseInt` / `Number.parseFloat`, never the global forms.
 - TDD: write tests first, then implement. All tests must pass: `pnpm test`.
-- Always run `pnpm lint` after changes. Only run `pnpm typecheck` and `pnpm test` when `src/`, `test/`, `package.json`, `tsconfig*.json`, `vitest.config.ts`, or `biome.json` changed — skip for doc/config-only changes (`.md`, `.claude/`, `.gitlab-ci.yml`, `.gitignore`, `.editorconfig`, `LICENSE`).
+- Always run `pnpm lint` after changes. Only run `pnpm typecheck` and `pnpm test` when `src/`, `test/`, `scripts/`, `package.json`, `tsconfig*.json`, `vitest.config.ts`, or `biome.json` changed — skip for doc/config-only changes (`.md`, `.claude/`, `.github/`, `.gitignore`, `.editorconfig`, `LICENSE`). `pnpm lint:shell` when `scripts/*.sh` changed.
 - All DB writes wrapped in transactions via `withTransaction()`.
 - No silent error swallowing (empty `catch {}`) unless the fallback behavior is documented. No try/catch fallback patterns (try A, catch and silently retry B).
 - No hardcoded secrets outside test fixtures.
-- Conventional Commits. Semantic Versioning.
+- Conventional Commits. Semantic Versioning. The commit types decide the next version (git-cliff, `scripts/next-version.sh`): `feat!:`/`BREAKING CHANGE:` major, `feat` minor, `fix`/`perf` patch. package.json `version` stays `0.0.0-development`; CI stamps the real one at release time and never commits it back.
 - Every `fetch()` call must check `response.ok` and throw a descriptive error on failure.
 - Every config/schema field must be functional — never expose an option that has no implementation.
 - No dead fields in interfaces/types. If a field is not read anywhere, remove it.
@@ -28,7 +28,7 @@ Finnish postal data loader (BAF/PCF/POM) — TypeScript, pnpm, Biome, Vitest.
 - Numeric schema fields that must be positive must use `.positive()` (or `.min(1)`). Numeric schema fields that must be whole numbers must also use `.int()`. Utility functions accepting sizes/counts must guard against non-positive values.
 - Code targeting the build output (`tsconfig.build.json`) must only use APIs available in the minimum `engines.node` version (`>=22.12`, the oldest maintained Node LTS; `@types/node` stays on that major so the types never offer a newer API).
 - `lint:fix` script scope must match `lint` script scope. Both must cover `src/` and `test/`.
-- CI must use `corepack install` (not `corepack prepare pnpm@latest`) to respect the `packageManager` field.
+- CI installs the toolchain from `mise.lock` in locked mode (`MISE_LOCKED=1`); every tool is pinned exactly in `mise.toml`, and package.json `packageManager` names mise's pnpm (`scripts/check-versions.sh`). Actions are pinned by commit SHA, service images by digest.
 - CI integration tests must run dialect-specific test files (not a shared test) so each database is actually exercised.
 - No dead exports — if a function/type is exported but never imported outside its own module, remove it.
 - No dead type variants — if a union type includes a variant that no code path ever produces, remove it.
@@ -52,6 +52,7 @@ Finnish postal data loader (BAF/PCF/POM) — TypeScript, pnpm, Biome, Vitest.
 ## Skills
 
 - `/audit` — full codebase audit (deps, lint, typecheck, tests, manual review). See [.claude/rules/review.md](.claude/rules/review.md) for the checklist.
+- `/maintain` — maintenance pass: toolchain + dependency + CI pin bumps, full verification, docs. See [.claude/skills/maintain/SKILL.md](.claude/skills/maintain/SKILL.md).
 - `/implement <description>` — implement any code change (feature, refactor, bugfix) following the checklists in [.claude/rules/implementation.md](.claude/rules/implementation.md).
 
 ## Self-maintenance

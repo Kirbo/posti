@@ -243,11 +243,21 @@ Override with `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`, and `XDG_STATE_HOME` environm
 
 ### Setup
 
+The toolchain comes from [mise](https://mise.jdx.dev): [`mise.toml`](mise.toml) pins every
+tool to an exact version (Node.js 26.13.0, the current LTS; pnpm 12; git-cliff; jq;
+shellcheck) and the committed `mise.lock` records each download's checksum.
+
 ```bash
-git clone https://github.com/kirbo/posti.git
+git clone https://github.com/Kirbo/posti.git
 cd posti
+mise install
 pnpm install
 ```
+
+Bump a tool: change its pin in `mise.toml`, run `mise lock` and commit both files (for pnpm,
+also package.json `packageManager`; `mise run check-versions` says what disagrees). npm
+packages and tools younger than a day are never installed (`pnpm-workspace.yaml`
+`minimumReleaseAge`, `mise.toml` `minimum_release_age`).
 
 ### Running Tests
 
@@ -258,8 +268,11 @@ pnpm test
 # Unit tests only
 pnpm test:unit
 
-# Integration tests (SQLite runs without Docker)
+# Integration tests (all four databases; see Local Databases below)
 pnpm test:integration
+
+# SQLite integration tests only (no server needed)
+pnpm test:sqlite
 
 # Watch mode
 pnpm test:watch
@@ -294,11 +307,18 @@ docker compose down
 # Type check
 pnpm typecheck
 
-# Lint
+# Lint (Biome; shellcheck for scripts/*.sh)
 pnpm lint
+pnpm lint:shell
 
 # Build (compile TypeScript)
 pnpm build
+
+# Check the package as npm consumers get it (tarball contents, publint, attw, smoke test)
+pnpm check:package
+
+# Everything CI checks except the MySQL/MariaDB/PostgreSQL integration tests
+mise run check
 
 # Run CLI in dev mode
 pnpm start -- --dialect sqlite --database ./test.db --force
@@ -324,7 +344,37 @@ src/
 test/
   unit/                   # Unit tests (no external dependencies)
   integration/            # Database integration tests
+
+scripts/                  # CI + release helpers (versions check, package check, next version, release)
+docs/SECRETS.md           # npm trusted publishing (no secrets in this repo)
 ```
+
+### Commits and releases
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org): they decide the
+next version. On `master`, CI computes it with [git-cliff](https://git-cliff.org)
+([`cliff.toml`](cliff.toml), [`scripts/next-version.sh`](scripts/next-version.sh)): a breaking
+change (`feat!:` or a `BREAKING CHANGE:` footer) bumps the major, `feat` the minor, `fix` and
+`perf` the patch; other types alone release nothing. `mise run next-version` previews it.
+
+The `release` job then stamps the version into package.json (in CI only: the repository keeps
+`0.0.0-development`), **stages** it on [npm](https://www.npmjs.com/package/posti) and creates
+the [GitHub release](https://github.com/Kirbo/posti/releases) and tag with the notes
+([`scripts/release.ts`](scripts/release.ts)). A staged version is not installable yet: **the
+maintainer approves it on npmjs.com** ("Staged Packages" tab, with 2FA). Staging uses
+[npm trusted publishing](https://docs.npmjs.com/trusted-publishers) from GitHub Actions: no
+npm token exists. Setup and the npmjs.com values: [`docs/SECRETS.md`](docs/SECRETS.md).
+`VERSION=x.y.z RELEASE_DRY_RUN=1 node scripts/release.ts` (after `pnpm build`) runs the
+release checks and `npm stage publish --dry-run` locally.
+
+### CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml), on GitHub-hosted runners: `check`
+(the toolchain from `mise.lock` in locked mode, a frozen install, lint, typecheck, build,
+package check), `audit`, `test` on Node 22, 24 and 26 (unit + SQLite) and `integration`
+against MySQL, MariaDB and PostgreSQL service containers; on `master` also `version` and
+`release`. Pull requests get the same checks; a weekly run re-checks everything, including
+`pnpm audit`. Docs-only changes run nothing.
 
 ## License
 
